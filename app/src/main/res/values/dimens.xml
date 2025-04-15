@@ -4,6 +4,6 @@
     <dimen name="cornerRadius">16dp</dimen>
     <dimen name="textSize_01">20sp</dimen>
     <dimen name="textSize_02">22sp</dimen>
-    <dimen name="textSize_03">12sp</dimen>
+    <dimen name="textSize_03">8sp</dimen>
     <dimen name="marginTop">20dp</dimen>
 </resources>

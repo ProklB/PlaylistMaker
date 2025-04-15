@@ -115,7 +115,7 @@
 
         <Button
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:layout_weight="1"
             android:backgroundTint="@color/white"
             android:text="@string/search"
@@ -128,7 +128,7 @@
 
         <Button
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:layout_weight="1"
             android:backgroundTint="@color/white"
             android:text="@string/library"
@@ -141,7 +141,7 @@
 
         <Button
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:layout_weight="1"
             android:backgroundTint="@color/white"
             android:text="@string/settings"
@@ -151,6 +151,20 @@
             app:icon="@drawable/settings"
             app:iconGravity="textTop"
             app:iconTint="@color/selectColor" />
+
+        <Button
+            android:id="@+id/backButton"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:backgroundTint="@color/white"
+            android:text="@string/backButton"
+            android:textColor="@color/buttonTextColor"
+            android:textSize="@dimen/textSize_03"
+            app:cornerRadius="@dimen/cornerRadius"
+            app:iconGravity="textTop"
+            app:iconTint="@color/selectColor" />
     </LinearLayout>
 
 </LinearLayout>
+

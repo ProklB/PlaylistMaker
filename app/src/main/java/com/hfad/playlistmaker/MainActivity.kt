@@ -16,21 +16,21 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         val button1 = findViewById<Button>(R.id.button1)
-        val buttonClickListener: View.OnClickListener = object : View.OnClickListener {
-            override fun onClick(v: View?) {
-                Toast.makeText(this@MainActivity, "Нажали на кнопку Поиск!", Toast.LENGTH_SHORT).show()
-            }
+        button1.setOnClickListener {
+            val intent = Intent(this, SearchActivity::class.java)
+            startActivity(intent)
         }
-        button1.setOnClickListener(buttonClickListener)
 
         val button2 = findViewById<Button>(R.id.button2)
         button2.setOnClickListener {
-            Toast.makeText(this@MainActivity, "Нажали на кнопку Медиатека!", Toast.LENGTH_SHORT).show()
+            val intent = Intent(this, MediaActivity::class.java)
+            startActivity(intent)
         }
 
         val button3 = findViewById<Button>(R.id.button3)
         button3.setOnClickListener {
-            Toast.makeText(this@MainActivity, "Нажали на кнопку Настройки!", Toast.LENGTH_SHORT).show()
+            val intent = Intent(this, SettingsActivity::class.java)
+            startActivity(intent)
         }
     }
 }
