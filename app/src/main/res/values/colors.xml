@@ -6,4 +6,6 @@
     <color name="selectColor">#3772E7</color>
     <color name="buttonTextColor">#1A1B22</color>
     <color name="iconColor">#1A1B22</color>
+    <color name="purple_500">#FF6200EE</color>
+    <color name="teal_200">#FF03DAC5</color>
 </resources>

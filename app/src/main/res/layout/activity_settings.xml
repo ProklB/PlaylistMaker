@@ -5,166 +5,53 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="@color/white"
     android:orientation="vertical"
-    android:padding="16dp">
+    android:padding="36dp">
 
-    <TextView
+    <com.google.android.material.appbar.MaterialToolbar
         android:id="@+id/title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingBottom="20dp"
-        android:paddingTop="20dp"
-        android:text="@string/settings"
+        app:navigationIcon="@drawable/arrowback"
+        app:titleTextAppearance="@style/MyTitleTextStyle"
+        app:title="@string/settings" />
+
+    <com.google.android.material.switchmaterial.SwitchMaterial
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingVertical="@dimen/marginTop"
+        android:checked="false"
+        android:gravity="center_vertical"
+        android:text="@string/themesNight"
+        android:textSize="@dimen/textSize_01"
+        app:thumbTint="@color/purple_500"
+        app:trackTint="@color/teal_200" />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingVertical="@dimen/marginTop"
+        android:drawableEnd="@drawable/share"
         android:textColor="@color/black"
-        android:textSize="@dimen/textSize_02" />
+        android:textSize="@dimen/textSize_01"
+        android:text="@string/share"/>
 
-    <FrameLayout
+    <com.google.android.material.textview.MaterialTextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/marginTop">
+        android:paddingVertical="@dimen/marginTop"
+        android:drawableEnd="@drawable/support"
+        android:textColor="@color/black"
+        android:textSize="@dimen/textSize_01"
+        android:text="@string/support"/>
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="start|center_vertical"
-            android:text="@string/themesNight"
-            android:textColor="@color/black"
-            android:textSize="@dimen/textSize_01" />
-
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="end|center_vertical"
-            android:scaleType="centerCrop"
-            android:src="@drawable/off" />
-    </FrameLayout>
-
-    <FrameLayout
+    <com.google.android.material.textview.MaterialTextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/marginTop">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="start|center_vertical"
-            android:text="@string/share"
-            android:textColor="@color/black"
-            android:textSize="@dimen/textSize_01" />
-
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="end|center_vertical"
-            android:scaleType="centerCrop"
-            android:src="@drawable/share" />
-    </FrameLayout>
-
-    <FrameLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/marginTop">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="start|center_vertical"
-            android:text="@string/support"
-            android:textColor="@color/black"
-            android:textSize="@dimen/textSize_01" />
-
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="end|center_vertical"
-            android:scaleType="centerCrop"
-            android:src="@drawable/support" />
-    </FrameLayout>
-
-    <FrameLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/marginTop">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="start|center_vertical"
-            android:text="@string/arrowForward"
-            android:textColor="@color/black"
-            android:textSize="@dimen/textSize_01" />
-
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="end|center_vertical"
-            android:scaleType="centerCrop"
-            android:src="@drawable/arrowforward" />
-    </FrameLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1">
-
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
-
-        <Button
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:backgroundTint="@color/white"
-            android:text="@string/search"
-            android:textColor="@color/buttonTextColor"
-            android:textSize="@dimen/textSize_03"
-            app:cornerRadius="@dimen/cornerRadius"
-            app:icon="@drawable/search"
-            app:iconGravity="textTop"
-            app:iconTint="@color/iconColor" />
-
-        <Button
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:backgroundTint="@color/white"
-            android:text="@string/library"
-            android:textColor="@color/buttonTextColor"
-            android:textSize="@dimen/textSize_03"
-            app:cornerRadius="@dimen/cornerRadius"
-            app:icon="@drawable/library"
-            app:iconGravity="textTop"
-            app:iconTint="@color/iconColor" />
-
-        <Button
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:backgroundTint="@color/white"
-            android:text="@string/settings"
-            android:textColor="@color/selectColor"
-            android:textSize="@dimen/textSize_03"
-            app:cornerRadius="@dimen/cornerRadius"
-            app:icon="@drawable/settings"
-            app:iconGravity="textTop"
-            app:iconTint="@color/selectColor" />
-
-        <Button
-            android:id="@+id/backButton"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:backgroundTint="@color/white"
-            android:text="@string/backButton"
-            android:textColor="@color/buttonTextColor"
-            android:textSize="@dimen/textSize_03"
-            app:cornerRadius="@dimen/cornerRadius"
-            app:iconGravity="textTop"
-            app:iconTint="@color/selectColor" />
-    </LinearLayout>
+        android:paddingVertical="@dimen/marginTop"
+        android:drawableEnd="@drawable/arrowforward"
+        android:textColor="@color/black"
+        android:textSize="@dimen/textSize_01"
+        android:text="@string/arrowForward"/>
 
 </LinearLayout>
 
