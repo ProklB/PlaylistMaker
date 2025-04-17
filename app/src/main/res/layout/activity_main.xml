@@ -7,13 +7,12 @@
     android:orientation="vertical"
     android:padding="16dp">
 
-    <TextView
+    <com.google.android.material.appbar.MaterialToolbar
         android:id="@+id/title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/title"
-        android:textColor="@color/white"
-        android:textSize="@dimen/textSize_02" />
+        app:titleTextAppearance="@style/MyTitleTextStyle"
+        app:title="@string/title" />
 
     <Button
         android:id="@+id/button1"
