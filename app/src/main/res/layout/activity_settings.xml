@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:background="@color/white"
+    android:background="@color/settingsLayout_light"
     android:orientation="vertical"
     android:padding="36dp">
 
@@ -18,40 +18,33 @@
     <com.google.android.material.switchmaterial.SwitchMaterial
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingVertical="@dimen/marginTop"
         android:checked="false"
         android:gravity="center_vertical"
         android:text="@string/themesNight"
-        android:textSize="@dimen/textSize_01"
         app:thumbTint="@color/purple_500"
-        app:trackTint="@color/teal_200" />
+        app:trackTint="@color/teal_200"
+        style ="@style/MaterialTextViewStyle"/>
 
     <com.google.android.material.textview.MaterialTextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingVertical="@dimen/marginTop"
         android:drawableEnd="@drawable/share"
-        android:textColor="@color/black"
-        android:textSize="@dimen/textSize_01"
-        android:text="@string/share"/>
+        android:text="@string/share"
+        style ="@style/MaterialTextViewStyle"/>
 
     <com.google.android.material.textview.MaterialTextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingVertical="@dimen/marginTop"
         android:drawableEnd="@drawable/support"
-        android:textColor="@color/black"
-        android:textSize="@dimen/textSize_01"
-        android:text="@string/support"/>
+        android:text="@string/support"
+        style ="@style/MaterialTextViewStyle"/>
 
     <com.google.android.material.textview.MaterialTextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingVertical="@dimen/marginTop"
         android:drawableEnd="@drawable/arrowforward"
-        android:textColor="@color/black"
-        android:textSize="@dimen/textSize_01"
-        android:text="@string/arrowForward"/>
+        android:text="@string/arrowForward"
+        style ="@style/MaterialTextViewStyle"/>
 
 </LinearLayout>
 
