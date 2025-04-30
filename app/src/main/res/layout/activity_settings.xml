@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:background="@color/settingsLayout_light"
+    android:background="@color/bg_settings"
     android:orientation="vertical"
     android:padding="36dp">
 
@@ -13,14 +13,14 @@
         android:layout_height="wrap_content"
         app:navigationIcon="@drawable/arrowback"
         app:titleTextAppearance="@style/MyTitleTextStyle"
-        app:title="@string/settings" />
+        app:title="@string/button_settings" />
 
     <com.google.android.material.switchmaterial.SwitchMaterial
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:checked="false"
         android:gravity="center_vertical"
-        android:text="@string/themesNight"
+        android:text="@string/switch_themes"
         app:thumbTint="@color/purple_500"
         app:trackTint="@color/teal_200"
         style ="@style/MaterialTextViewStyle"/>
@@ -29,21 +29,21 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:drawableEnd="@drawable/share"
-        android:text="@string/share"
+        android:text="@string/textview_share"
         style ="@style/MaterialTextViewStyle"/>
 
     <com.google.android.material.textview.MaterialTextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:drawableEnd="@drawable/support"
-        android:text="@string/support"
+        android:text="@string/textview_support"
         style ="@style/MaterialTextViewStyle"/>
 
     <com.google.android.material.textview.MaterialTextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:drawableEnd="@drawable/arrowforward"
-        android:text="@string/arrowForward"
+        android:text="@string/textview_arrowForward"
         style ="@style/MaterialTextViewStyle"/>
 
 </LinearLayout>

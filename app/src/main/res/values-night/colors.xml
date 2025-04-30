@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="mainLayout_light">#121212</color>
-    <color name="settingsLayout_light">#121212</color>
-    <color name="text_light">#FFFFFF</color>
-    <color name="text_main_light">#FFFFFF</color>
+    <color name="bg_main">#121212</color>
+    <color name="bg_settings">#121212</color>
+    <color name="text_textview">#FFFFFF</color>
+    <color name="text_title_main">#FFFFFF</color>
 </resources>

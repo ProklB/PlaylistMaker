@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:background="@color/mainLayout_light"
+    android:background="@color/bg_main"
     android:orientation="vertical"
     android:padding="16dp">
 
@@ -12,15 +12,15 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:titleTextAppearance="@style/MyTitleTextStyle"
-        app:titleTextColor="@color/text_main_light"
-        app:title="@string/title" />
+        app:titleTextColor="@color/text_title_main"
+        app:title="@string/title_main" />
 
     <Button
         android:id="@+id/button1"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:text="@string/search"
+        android:text="@string/button_search"
         app:icon="@drawable/search"
         style = "@style/ButtonStyle"/>
     <Button
@@ -28,7 +28,7 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:text="@string/library"
+        android:text="@string/button_library"
         app:icon="@drawable/library"
         style = "@style/ButtonStyle"/>
     <Button
@@ -36,7 +36,7 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:text="@string/settings"
+        android:text="@string/button_settings"
         app:icon="@drawable/settings"
         style = "@style/ButtonStyle"/>
 
