@@ -4,4 +4,6 @@
     <color name="bg_settings">#121212</color>
     <color name="text_textview">#FFFFFF</color>
     <color name="text_title_main">#FFFFFF</color>
+
+    <color name="icon_color">#FFFFFF</color>
 </resources>

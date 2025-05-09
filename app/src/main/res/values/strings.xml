@@ -11,4 +11,16 @@
     <string name="textview_support">Написать в поддержку</string>
     <string name="textview_arrowForward">Пользовательское соглашение</string>
 
+    <!-- Поделиться приложением -->
+    <string name="share_message">Смотри, что я нашел: %s</string>
+    <string name="share_link">https://practicum.yandex.ru/android-developer/</string>
+
+    <!-- Письмо в поддержку -->
+    <string name="support_email">proklb@ya.ru</string>
+    <string name="support_theme">Сообщение разработчикам и разработчицам приложения Playlist Maker</string>
+    <string name="support_text">Спасибо разработчикам и разработчицам за крутое приложение!</string>
+
+    <!-- Пользовательское соглашение -->
+    <string name="agreement_link">https://yandex.ru/legal/practicum_offer/</string>
+
 </resources>

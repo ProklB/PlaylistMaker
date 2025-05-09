@@ -1,10 +1,49 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/main"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".SearchActivity">
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+android:layout_width="match_parent"
+android:layout_height="match_parent"
+xmlns:app="http://schemas.android.com/apk/res-auto"
+android:background="@color/bg_settings"
+android:orientation="vertical"
+android:padding="36dp">
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+<com.google.android.material.appbar.MaterialToolbar
+    android:id="@+id/title"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    app:navigationIcon="@drawable/arrowback"
+    app:titleTextAppearance="@style/MyTitleTextStyle"
+    app:title="@string/button_search" />
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp">
+
+        <EditText
+            android:id="@+id/searchEditText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:drawableStart="@drawable/search_icon"
+            android:drawablePadding="8dp"
+            android:layout_gravity="start"
+            style = "@style/IconStyle"
+            android:hint="Поиск"
+            android:imeOptions="actionSearch"
+            android:inputType="text"
+            android:maxLength="20"
+            android:lines="1" />
+
+        <ImageButton
+            android:id="@+id/clearButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end|center_vertical"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="Очистить поиск"
+            android:src="@drawable/delete_dark"
+            android:visibility="gone" />
+    </FrameLayout>
+
+</LinearLayout>
+
