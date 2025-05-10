@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <dimen name="iconPadding">20dp</dimen>
-    <dimen name="cornerRadius">16dp</dimen>
-    <dimen name="textSize_01">20sp</dimen>
-    <dimen name="textSize_02">22sp</dimen>
-    <dimen name="textSize_03">8sp</dimen>
-    <dimen name="marginTop">20dp</dimen>
+    <dimen name="icon_button_padding">20dp</dimen>
+    <dimen name="corner_radius_button">16dp</dimen>
+    <dimen name="margin_top_textview">20dp</dimen>
+
+    <dimen name="text_size_01">20sp</dimen>
+    <dimen name="text_size_02">22sp</dimen>
+    <dimen name="text_size_03">8sp</dimen>
+
 </resources>
