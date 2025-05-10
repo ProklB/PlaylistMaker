@@ -23,4 +23,8 @@
     <!-- Пользовательское соглашение -->
     <string name="agreement_link">https://yandex.ru/legal/practicum_offer/</string>
 
+    <!-- Поиск -->
+    <string name="search_hint">Поиск</string>
+    <string name="search_content_description">Очистить поиск</string>
+
 </resources>
