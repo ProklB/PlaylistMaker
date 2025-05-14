@@ -9,6 +9,7 @@ import android.widget.EditText
 import android.widget.ImageButton
 import com.google.android.material.appbar.MaterialToolbar
 import android.view.inputmethod.InputMethodManager
+import androidx.core.view.isVisible
 
 class SearchActivity : AppCompatActivity() {
 
@@ -35,7 +36,8 @@ class SearchActivity : AppCompatActivity() {
             }
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                clearButton.visibility = if (s.isNullOrEmpty()) android.view.View.GONE else android.view.View.VISIBLE
+                //clearButton.visibility = if (s.isNullOrEmpty()) android.view.View.GONE else android.view.View.VISIBLE
+                clearButton.isVisible= !s.isNullOrEmpty()
             }
 
             override fun afterTextChanged(s: Editable?) {
@@ -52,14 +54,18 @@ class SearchActivity : AppCompatActivity() {
 
     }
 
+    companion object {
+        private const val KEY_SAVED_SEARCH_TEXT = "SAVED_SEARCH_TEXT"
+    }
+
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        outState.putString("SAVED_SEARCH_TEXT", currentText)
+        outState.putString(KEY_SAVED_SEARCH_TEXT, currentText)
     }
 
     override fun onRestoreInstanceState(savedInstanceState: Bundle) {
         super.onRestoreInstanceState(savedInstanceState)
-        val savedText = savedInstanceState.getString("SAVED_SEARCH_TEXT", "")
+        val savedText = savedInstanceState.getString(KEY_SAVED_SEARCH_TEXT, "")
         searchEditText.setText(savedText)
         currentText = savedText
     }

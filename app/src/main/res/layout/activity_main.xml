@@ -5,7 +5,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="@color/bg_main"
     android:orientation="vertical"
-    android:padding="16dp">
+    style = "@style/LayoutStyle">
 
     <com.google.android.material.appbar.MaterialToolbar
         android:id="@+id/title"
@@ -13,7 +13,8 @@
         android:layout_height="wrap_content"
         app:titleTextAppearance="@style/MyTitleTextStyle"
         app:titleTextColor="@color/text_title_main"
-        app:title="@string/title_main" />
+        app:title="@string/title_main"
+        />
 
     <Button
         android:id="@+id/button1"
@@ -22,7 +23,8 @@
         android:layout_weight="1"
         android:text="@string/button_search"
         app:icon="@drawable/search"
-        style = "@style/ButtonStyle"/>
+        style = "@style/ButtonStyle"
+        android:layout_marginTop="24dp"/>
     <Button
         android:id="@+id/button2"
         android:layout_width="match_parent"

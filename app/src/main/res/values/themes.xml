@@ -6,5 +6,4 @@
         <item name="android:windowBackground">@color/bg_main</item>
     </style>
 
-    <style name="Theme.PlaylistMaker" parent="Base.Theme.PlaylistMaker" />
 </resources>
