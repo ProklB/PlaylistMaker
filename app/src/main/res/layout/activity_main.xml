@@ -3,60 +3,43 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:background="@color/mainLayout"
+    android:background="@color/bg_main"
     android:orientation="vertical"
-    android:padding="16dp">
+    style = "@style/LayoutStyle">
 
-    <TextView
+    <com.google.android.material.appbar.MaterialToolbar
         android:id="@+id/title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/title"
-        android:textColor="@color/white"
-        android:textSize="@dimen/textSize_02" />
+        app:titleTextAppearance="@style/MyTitleTextStyle"
+        app:titleTextColor="@color/text_title_main"
+        app:title="@string/title_main"
+        />
 
     <Button
         android:id="@+id/button1"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:backgroundTint="@color/white"
-        android:text="@string/search"
-        android:textColor="@color/buttonTextColor"
-        android:textSize="@dimen/textSize_01"
+        android:text="@string/button_search"
         app:icon="@drawable/search"
-        app:iconGravity="textStart"
-        app:iconPadding="@dimen/iconPadding"
-        app:iconTint="@color/iconColor"
-        app:cornerRadius="@dimen/cornerRadius"/>
+        style = "@style/ButtonStyle"
+        android:layout_marginTop="24dp"/>
     <Button
         android:id="@+id/button2"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:backgroundTint="@color/white"
-        android:text="@string/library"
-        android:textColor="@color/buttonTextColor"
-        android:textSize="@dimen/textSize_01"
+        android:text="@string/button_library"
         app:icon="@drawable/library"
-        app:iconGravity="textStart"
-        app:iconPadding="@dimen/iconPadding"
-        app:iconTint="@color/iconColor"
-        app:cornerRadius="@dimen/cornerRadius"/>
-
+        style = "@style/ButtonStyle"/>
     <Button
         android:id="@+id/button3"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:backgroundTint="@color/white"
-        android:text="@string/settings"
-        android:textColor="@color/buttonTextColor"
-        android:textSize="@dimen/textSize_01"
-        app:cornerRadius="@dimen/cornerRadius"
+        android:text="@string/button_settings"
         app:icon="@drawable/settings"
-        app:iconGravity="textStart"
-        app:iconPadding="@dimen/iconPadding"
-        app:iconTint="@color/iconColor" />
+        style = "@style/ButtonStyle"/>
 
 </LinearLayout>

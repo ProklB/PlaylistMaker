@@ -1,13 +1,30 @@
 <resources>
     <string name="app_name" translatable="false">PlaylistMaker</string>
-    <string name="title">Playlist maker</string>
-    <string name="search">Поиск</string>
-    <string name="library">Медиатека</string>
-    <string name="settings">Настройки</string>
-    <string name="themesNight">Темная тема</string>
-    <string name="share">Поделиться приложением</string>
-    <string name="support">Написать в поддержку</string>
-    <string name="arrowForward">Пользовательское соглашение</string>
-    <string name="backButton">Назад</string>
+    <string name="title_main">Playlist maker</string>
+
+    <string name="button_search">Поиск</string>
+    <string name="button_library">Медиатека</string>
+    <string name="button_settings">Настройки</string>
+
+    <string name="switch_themes">Темная тема</string>
+    <string name="textview_share">Поделиться приложением</string>
+    <string name="textview_support">Написать в поддержку</string>
+    <string name="textview_arrowForward">Пользовательское соглашение</string>
+
+    <!-- Поделиться приложением -->
+    <string name="share_message">Смотри, что я нашел: %s</string>
+    <string name="share_link">https://practicum.yandex.ru/android-developer/</string>
+
+    <!-- Письмо в поддержку -->
+    <string name="support_email">proklb@ya.ru</string>
+    <string name="support_theme">Сообщение разработчикам и разработчицам приложения Playlist Maker</string>
+    <string name="support_text">Спасибо разработчикам и разработчицам за крутое приложение!</string>
+
+    <!-- Пользовательское соглашение -->
+    <string name="agreement_link">https://yandex.ru/legal/practicum_offer/</string>
+
+    <!-- Поиск -->
+    <string name="search_hint">Поиск</string>
+    <string name="search_content_description">Очистить поиск</string>
 
 </resources>
