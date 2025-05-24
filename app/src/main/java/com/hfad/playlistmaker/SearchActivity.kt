@@ -78,8 +78,6 @@ class SearchActivity : AppCompatActivity() {
     }
 
     fun createTrackList(): ArrayList<Track> {
-        //уважаемые ревьюеры, это мок-объект,
-        //поэтому добавил лишнего от себя для проверки работы RecyclerView
 
         val trackList = ArrayList<Track>()
 
