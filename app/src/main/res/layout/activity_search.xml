@@ -44,7 +44,8 @@
             android:textSize="16sp"
             android:inputType="text"
             android:maxLength="20"
-            android:lines="1"/>
+            android:lines="1"
+            android:textCursorDrawable="@drawable/cursor_color"/>
 
         <ImageButton
             android:id="@+id/clearButton"
