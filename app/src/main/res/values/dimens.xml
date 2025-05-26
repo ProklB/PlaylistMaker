@@ -3,6 +3,7 @@
     <dimen name="icon_button_padding">20dp</dimen>
     <dimen name="corner_radius_button">16dp</dimen>
     <dimen name="margin_top_textview">20dp</dimen>
+    <dimen name="artwork_square">45dp</dimen>
 
     <dimen name="text_size_01">16sp</dimen>
     <dimen name="text_size_02">22sp</dimen>
