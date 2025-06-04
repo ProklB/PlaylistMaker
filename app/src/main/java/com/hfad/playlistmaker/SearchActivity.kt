@@ -27,7 +27,7 @@ class SearchActivity : AppCompatActivity() {
     private lateinit var searchEditText: EditText
     private var currentText = ""
     private var lastSearchText = ""
-    private var tracks = ArrayList<Track>()
+    private var tracks: MutableList<Track> = mutableListOf()
     private lateinit var recyclerView: RecyclerView
     private lateinit var placeholder: View
     private lateinit var placeholderIcon: ImageView
@@ -114,17 +114,21 @@ class SearchActivity : AppCompatActivity() {
         itunesApi.search(text)
             .enqueue(object : Callback<ItunesResponse> {
                 override fun onResponse(call: Call<ItunesResponse>, response: Response<ItunesResponse>) {
-                    when (response.code()) {
-                        200 -> {
-                            tracks.clear()
-                            if (response.body()?.results?.isNotEmpty() == true) {
-                                showPlaceholder(false)
-                                tracks.addAll(response.body()?.results!!)
-                                recyclerView.adapter = TrackAdapter(tracks)
-                            } else {
-                                showPlaceholder(true, R.drawable.placeholder_no_results, getString(R.string.nothing_found))
-                            }
+                    if (response.isSuccessful) {
+                        val searchResults = response.body()?.results
+                        tracks.clear()
+
+                        if (!searchResults.isNullOrEmpty()) {
+                            showPlaceholder(false)
+                            tracks.addAll(searchResults)
+                            recyclerView.adapter = TrackAdapter(tracks)
+                        } else {
+                            showPlaceholder(true, R.drawable.placeholder_no_results,
+                                getString(R.string.nothing_found))
                         }
+                    } else {
+                        showPlaceholder(true, R.drawable.placeholder_error,
+                            getString(R.string.server_error))
                     }
                 }
 
