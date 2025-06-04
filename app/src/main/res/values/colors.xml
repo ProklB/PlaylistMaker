@@ -3,22 +3,23 @@
 
     <!-- Цвета -->
     <color name="black">#FF000000</color>
-    <color name="white">#FFFFFFFF</color>
+    <color name="white">#FFFFFF</color>
     <color name="icon_button">#1A1B22</color>
     <color name="icon_color">#AEAFB4</color>
     <color name="icon_color_dark">#AEAFB4</color>
     <color name="switch_knob">#AEAFB4</color>
     <color name="switch_track">#E6E8EB</color>
 
+
     <!-- Фон -->
     <color name="bg_main">#3772E7</color>
-    <color name="bg_secondary">#FFFFFFFF</color>
+    <color name="bg_secondary">#FFFFFF</color>
     <color name="bg_edittext">#E6E8EB</color>
 
     <!-- Текст -->
     <color name="text_button">#1A1B22</color>
     <color name="text_textview">#1A1B22</color>
-    <color name="text_title_main">#FFFFFFFF</color>
+    <color name="text_title_main">#FFFFFF</color>
     <color name="text_hint">#AEAFB4</color>
     <color name="text_trackname">#000000</color>
     <color name="text_trackinfo">#AEAFB4</color>
@@ -29,5 +30,9 @@
     <!-- Переключатель -->
     <color name="switch_track_tint">#AEAFB4</color>
     <color name="switch_thumb_tint">#E6E8EB</color>
+
+    <!-- Плейсхолдер -->
+    <color name="placeholder_text">#FFFFFF</color>
+    <color name="placeholder_background">#1A1B22</color>
 
 </resources>
