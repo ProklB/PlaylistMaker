@@ -26,5 +26,8 @@
     <!-- Поиск -->
     <string name="search_hint">Поиск</string>
     <string name="search_content_description">Очистить поиск</string>
+    <string name="nothing_found">Ничего не нашлось</string>
+    <string name="update">Обновить</string>
+    <string name="server_error">Проблемы со связью\n\nЗагрузка не удалась. Проверьте подключение к интернету</string>
 
 </resources>

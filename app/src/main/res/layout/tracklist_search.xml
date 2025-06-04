@@ -23,18 +23,9 @@
             android:id="@+id/artworkImageView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:scaleType="centerCrop" />
+            android:scaleType="centerCrop"
+            android:background="@color/bg_secondary"/>
     </androidx.cardview.widget.CardView>
-
-    <ImageView
-        android:id="@+id/arrowImageView"
-        android:layout_width="24dp"
-        android:layout_height="24dp"
-        android:layout_marginEnd="8dp"
-        android:src="@drawable/arrowforward"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/trackNameTextView"
@@ -43,12 +34,11 @@
         android:ellipsize="end"
         android:maxLines="1"
         android:textAppearance="@style/trackNameTextFont"
-        app:layout_constraintBottom_toTopOf="@+id/artistNameTextView"
         app:layout_constraintEnd_toStartOf="@+id/arrowImageView"
         app:layout_constraintStart_toEndOf="@+id/artworkCardView"
         app:layout_constraintTop_toTopOf="@id/artworkCardView"
         android:layout_marginStart="8dp"
-        tools:text="Название песни" />
+        tools:text="Название песнийййййййййййййййййййййййй" />
 
     <TextView
         android:id="@+id/artistNameTextView"
@@ -56,14 +46,14 @@
         android:layout_height="wrap_content"
         android:ellipsize="end"
         android:maxLines="1"
-        app:layout_constraintStart_toEndOf="@+id/artworkCardView"
-        app:layout_constraintTop_toBottomOf="@+id/trackNameTextView"
-        app:layout_constraintBottom_toBottomOf="@id/artworkCardView"
+        app:layout_constrainedWidth="true"
+        app:layout_constraintStart_toEndOf="@id/artworkCardView"
         app:layout_constraintEnd_toStartOf="@id/ic"
+        app:layout_constraintTop_toBottomOf="@id/trackNameTextView"
         android:layout_marginTop="1dp"
         android:layout_marginStart="8dp"
         android:textAppearance="@style/trackInfoTextFont"
-        tools:text="Король и шут" />
+        tools:text="Король и шутйййййййййййййййййййййййййййййййййййййййййййййййй" />
 
     <ImageView
         android:id="@+id/ic"
@@ -79,11 +69,22 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:maxLines="1"
-        app:layout_constraintBottom_toBottomOf="@id/artistNameTextView"
+        app:layout_constraintHorizontal_bias="0"
+        app:layout_constraintStart_toEndOf="@id/ic"
         app:layout_constraintTop_toTopOf="@id/artistNameTextView"
-        app:layout_constraintStart_toEndOf="@+id/ic"
+        app:layout_constraintBottom_toBottomOf="@id/artistNameTextView"
+        app:layout_constraintEnd_toStartOf="@id/arrowImageView"
         android:textAppearance="@style/trackInfoTextFont"
-        tools:text="5:05" />
+        tools:text="5:05"/>
 
+    <ImageView
+        android:id="@+id/arrowImageView"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_marginEnd="8dp"
+        android:src="@drawable/arrowforward"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -12,4 +12,6 @@
     <color name="switch_thumb_tint">#9FBBF3</color>
     <color name="text_trackname">#FFFFFF</color>
     <color name="text_trackinfo">#FFFFFF</color>
+    <color name="placeholder_text">#1A1B22</color>
+    <color name="placeholder_background">#FFFFFF</color>
 </resources>

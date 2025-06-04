@@ -47,4 +47,17 @@
         <item name="android:textColor">@color/text_trackinfo</item>
     </style>
 
+    <style name="ButtonUpdate" parent="Widget.MaterialComponents.Button.UnelevatedButton">
+        <item name="android:backgroundTint">@color/placeholder_background</item>
+        <item name="android:textColor">@color/placeholder_text</item>
+        <item name="android:textSize">@dimen/text_size_05</item>
+        <item name="cornerRadius">@dimen/corner_radius_button_update</item>
+        <item name="android:paddingStart">6dp</item>
+        <item name="android:paddingEnd">8dp</item>
+        <item name="android:paddingTop">4dp</item>
+        <item name="android:paddingBottom">4dp</item>
+        <item name="android:fontFamily">@font/ys_display_medium</item>
+        <item name="android:textAllCaps">false</item>
+    </style>
+
 </resources>
