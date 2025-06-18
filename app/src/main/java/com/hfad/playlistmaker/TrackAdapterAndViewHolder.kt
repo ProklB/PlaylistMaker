@@ -10,7 +10,10 @@ import com.bumptech.glide.Glide
 import java.text.SimpleDateFormat
 import java.util.Locale
 
-class TrackAdapter(private val trackList: List<Track>) : RecyclerView.Adapter<TrackViewHolder> () {
+class TrackAdapter(
+    private var trackList:List<Track>,
+    private val onClick: (Track) -> Unit
+):RecyclerView.Adapter<TrackViewHolder> () {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TrackViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.tracklist_search, parent, false)
@@ -18,12 +21,18 @@ class TrackAdapter(private val trackList: List<Track>) : RecyclerView.Adapter<Tr
     }
 
     override fun onBindViewHolder(holder: TrackViewHolder, position: Int) {
-        holder.bind(trackList[position])
+        holder.bind(trackList[position], onClick)
     }
 
     override fun getItemCount(): Int {
         return trackList.size
     }
+
+    fun updateTracks(newTracks: List<Track>) {
+        trackList = newTracks
+        notifyDataSetChanged()
+    }
+
 }
 
 class TrackViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -33,7 +42,7 @@ class TrackViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
     private val trackTimeTextView: TextView = itemView.findViewById(R.id.trackTimeTextView)
     private var artworkImageView: ImageView = itemView.findViewById(R.id.artworkImageView)
 
-    fun bind(model: Track) {
+    fun bind(model: Track, onClick: (Track) -> Unit)  {
         tracknameTextView.text = model.trackName
         artistNameTextView.text = model.artistName
         trackTimeTextView.text = SimpleDateFormat("mm:ss", Locale.getDefault()).format(model.trackTimeMillis)
@@ -43,6 +52,11 @@ class TrackViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
             .centerCrop()
             .placeholder(R.drawable.placeholder)
             .into(artworkImageView)
+
+        itemView.setOnClickListener {
+            onClick(model)
+        }
+
     }
 
 }
