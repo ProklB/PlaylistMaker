@@ -16,9 +16,9 @@
         app:title="@string/button_settings"/>
 
     <com.google.android.material.switchmaterial.SwitchMaterial
+        android:id="@+id/themeSwitcher"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:checked="false"
         android:gravity="center_vertical"
         android:text="@string/switch_themes"
         app:thumbTint="@color/switch_track_tint"
