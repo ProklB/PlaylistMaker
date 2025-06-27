@@ -41,10 +41,30 @@
         <item name="android:textColor">@color/text_trackname</item>
     </style>
 
+    <style name="trackNameText">
+        <item name="android:fontFamily">@font/ys_display_medium</item>
+        <item name="android:textSize">22sp</item>
+        <item name="android:textColor">@color/text_textview</item>
+    </style>
+
     <style name="trackInfoTextFont">
         <item name="android:fontFamily">@font/ys_display_regular</item>
         <item name="android:textSize">11sp</item>
         <item name="android:textColor">@color/text_trackinfo</item>
+    </style>
+
+    <style name="trackInfoText" parent="trackNameText">
+        <item name="android:textSize">14sp</item>
+    </style>
+
+    <style name="trackInfoLabel">
+        <item name="android:fontFamily">@font/ys_display_regular</item>
+        <item name="android:textSize">13sp</item>
+        <item name="android:textColor">@color/trackLabel</item>
+    </style>
+
+    <style name="trackInfoValue" parent="trackInfoLabel">
+        <item name="android:textColor">@color/text_textview</item>
     </style>
 
     <style name="ButtonUpdate" parent="Widget.MaterialComponents.Button.UnelevatedButton">

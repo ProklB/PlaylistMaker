@@ -32,4 +32,11 @@
     <string name="search_history_title">Вы искали</string>
     <string name="clear_history">Очистить историю</string>
 
+    <!-- Плейер -->
+    <string name="media_trackTime">Длительность</string>
+    <string name="media_collectionName">Альбом</string>
+    <string name="media_releaseDate">Год</string>
+    <string name="media_genreName">Жанр</string>
+    <string name="media_country">Страна</string>
+
 </resources>
