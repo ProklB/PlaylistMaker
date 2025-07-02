@@ -1,6 +1,7 @@
 package com.hfad.playlistmaker
 
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -133,13 +134,23 @@ class SearchActivity : AppCompatActivity() {
     private fun setupAdapters() {
         searchAdapter = TrackAdapter(tracks) { track ->
             addToHistory(track)
+            startMediaActivity(track)
         }
         recyclerView.layoutManager = LinearLayoutManager(this)
         recyclerView.adapter = searchAdapter
 
-        historyAdapter = TrackAdapter(emptyList()) { }
+        historyAdapter = TrackAdapter(emptyList()) { track ->
+            startMediaActivity(track)
+        }
         historyRecyclerView.layoutManager = LinearLayoutManager(this)
         historyRecyclerView.adapter = historyAdapter
+    }
+
+    private fun startMediaActivity(track: Track) {
+        Intent(this, MediaActivity::class.java).apply {
+            putExtra("TRACK", track)
+            startActivity(this)
+        }
     }
 
     private fun setupHistory() {

@@ -9,6 +9,7 @@
     <color name="icon_color_dark">#AEAFB4</color>
     <color name="switch_knob">#AEAFB4</color>
     <color name="switch_track">#E6E8EB</color>
+    <color name="trackLabel">#AEAFB4</color>
 
 
     <!-- Фон -->
@@ -34,5 +35,8 @@
     <!-- Плейсхолдер -->
     <color name="placeholder_text">#FFFFFF</color>
     <color name="placeholder_background">#1A1B22</color>
+
+    <!-- Button -->
+    <color name="button_background">#1A1B22</color>
 
 </resources>
