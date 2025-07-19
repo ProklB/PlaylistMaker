@@ -12,20 +12,12 @@ import androidx.appcompat.app.AppCompatActivity
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.google.android.material.appbar.MaterialToolbar
-import com.hfad.playlistmaker.Constanta.Companion.PROGRESS_UPDATE_DELAY
 import java.text.SimpleDateFormat
 import java.util.Locale
 
 class MediaActivity : AppCompatActivity() {
 
-    companion object {
-        private const val STATE_DEFAULT = 0
-        private const val STATE_PREPARED = 1
-        private const val STATE_PLAYING = 2
-        private const val STATE_PAUSED = 3
-    }
-
-    private var playerState = STATE_DEFAULT
+    private var playerState = PlayerState.DEFAULT
     private lateinit var mediaPlayer: MediaPlayer
     private lateinit var playButton: ImageButton
     private lateinit var progressText: TextView
@@ -42,7 +34,7 @@ class MediaActivity : AppCompatActivity() {
 
         updateProgressRunnable = object : Runnable {
             override fun run() {
-                if (playerState == STATE_PLAYING) {
+                if (playerState == PlayerState.PLAYING) {
                     val timeFormat = SimpleDateFormat("mm:ss", Locale.getDefault())
                     progressText.text = timeFormat.format(mediaPlayer.currentPosition)
                     handler.postDelayed(this, PROGRESS_UPDATE_DELAY)
@@ -61,7 +53,7 @@ class MediaActivity : AppCompatActivity() {
     }
 
     private fun displayTrackInfo() {
-        val track = intent.getParcelableExtra<Track>(Constanta.TRACK_KEY) ?: return
+        val track = intent.getParcelableExtra<Track>(SearchActivity.TRACK_KEY) ?: return
 
         findViewById<TextView>(R.id.trackName).text = track.trackName
         findViewById<TextView>(R.id.artistName).text = track.artistName
@@ -112,17 +104,17 @@ class MediaActivity : AppCompatActivity() {
     }
 
     private fun preparePlayer() {
-        val track = intent.getParcelableExtra<Track>(Constanta.TRACK_KEY) ?: return
+        val track = intent.getParcelableExtra<Track>(SearchActivity.TRACK_KEY) ?: return
 
         mediaPlayer = MediaPlayer().apply {
             setDataSource(track.previewUrl)
             prepareAsync()
             setOnPreparedListener {
-                playerState = STATE_PREPARED
+                playerState = PlayerState.PREPARED
                 playButton.isEnabled = true
             }
             setOnCompletionListener {
-                playerState = STATE_PREPARED
+                playerState = PlayerState.PREPARED
                 playButton.setImageResource(R.drawable.button_play)
                 handler.removeCallbacks(updateProgressRunnable)
                 progressText.text = "00:00"
@@ -136,28 +128,29 @@ class MediaActivity : AppCompatActivity() {
 
     private fun playbackControl() {
         when(playerState) {
-            STATE_PLAYING -> pausePlayer()
-            STATE_PREPARED, STATE_PAUSED -> startPlayer()
+            PlayerState.PLAYING -> pausePlayer()
+            PlayerState.PREPARED, PlayerState.PAUSED -> startPlayer()
+            PlayerState.DEFAULT -> TODO()
         }
     }
 
     private fun startPlayer() {
         mediaPlayer.start()
         playButton.setImageResource(R.drawable.button_pause)
-        playerState = STATE_PLAYING
+        playerState = PlayerState.PLAYING
         handler.post(updateProgressRunnable)
     }
 
     private fun pausePlayer() {
         mediaPlayer.pause()
         playButton.setImageResource(R.drawable.button_play)
-        playerState = STATE_PAUSED
+        playerState = PlayerState.PAUSED
         handler.removeCallbacks(updateProgressRunnable)
     }
 
     override fun onPause() {
         super.onPause()
-        if (playerState == STATE_PLAYING) {
+        if (playerState == PlayerState.PLAYING) {
             pausePlayer()
         }
     }
@@ -166,5 +159,17 @@ class MediaActivity : AppCompatActivity() {
         super.onDestroy()
         handler.removeCallbacks(updateProgressRunnable)
         mediaPlayer.release()
+    }
+
+    companion object {
+
+        private const val PROGRESS_UPDATE_DELAY = 300L
+    }
+
+    enum class PlayerState {
+        DEFAULT,
+        PREPARED,
+        PLAYING,
+        PAUSED
     }
 }
