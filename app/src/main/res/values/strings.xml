@@ -38,5 +38,6 @@
     <string name="media_releaseDate">Год</string>
     <string name="media_genreName">Жанр</string>
     <string name="media_country">Страна</string>
+    <string name="media_progressText">00:00</string>
 
 </resources>

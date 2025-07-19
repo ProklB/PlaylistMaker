@@ -3,6 +3,8 @@ package com.hfad.playlistmaker
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.View
@@ -13,17 +15,21 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageButton
 import android.widget.ImageView
+import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.appbar.MaterialToolbar
+import com.hfad.playlistmaker.Constanta.Companion.CLICK_DEBOUNCE_DELAY
+import com.hfad.playlistmaker.Constanta.Companion.SEARCH_DEBOUNCE_DELAY
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import kotlin.math.max
 
 class SearchActivity : AppCompatActivity() {
 
@@ -44,6 +50,9 @@ class SearchActivity : AppCompatActivity() {
     private lateinit var historyAdapter: TrackAdapter
     private lateinit var searchAdapter: TrackAdapter
     private lateinit var clearButton: ImageButton
+    private lateinit var progressBar: ProgressBar
+    private var isClickDebounced = false
+    private var searchStartTime = 0L    //удалить после тестирования или ревью
 
     private val retrofit = Retrofit.Builder()
         .baseUrl("https://itunes.apple.com")
@@ -51,6 +60,8 @@ class SearchActivity : AppCompatActivity() {
         .build()
 
     private val itunesApi = retrofit.create(ItunesApi::class.java)
+    private val handler = Handler(Looper.getMainLooper())
+    private val searchRunnable = Runnable { startSearch() }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -82,12 +93,18 @@ class SearchActivity : AppCompatActivity() {
         historyTitle = findViewById(R.id.historyTitle)
         historyRecyclerView = findViewById(R.id.historyRecyclerView)
         clearHistoryButton = findViewById(R.id.clearHistoryButton)
+        progressBar = findViewById(R.id.progressBar)
     }
 
     private fun setupToolbar() {
         val toolbar = findViewById<MaterialToolbar>(R.id.title)
         setSupportActionBar(toolbar)
         toolbar.setNavigationOnClickListener { finish() }
+    }
+
+    private fun searchDebounce() {
+        handler.removeCallbacks(searchRunnable)
+        handler.postDelayed(searchRunnable, SEARCH_DEBOUNCE_DELAY)
     }
 
     private fun setupSearchText() {
@@ -102,6 +119,7 @@ class SearchActivity : AppCompatActivity() {
                                        count: Int) {
                 clearButton.isVisible = !s.isNullOrEmpty()
                 updateHistoryVisibility()
+                searchDebounce()
             }
             override fun afterTextChanged(s: Editable?) {
                 currentText = s.toString()
@@ -133,8 +151,16 @@ class SearchActivity : AppCompatActivity() {
 
     private fun setupAdapters() {
         searchAdapter = TrackAdapter(tracks) { track ->
-            addToHistory(track)
-            startMediaActivity(track)
+            if (!isClickDebounced) {
+                isClickDebounced = true
+                addToHistory(track)
+                startMediaActivity(track)
+
+                Handler(Looper.getMainLooper()).postDelayed({
+                    isClickDebounced = false
+                }, CLICK_DEBOUNCE_DELAY)
+            }
+
         }
         recyclerView.layoutManager = LinearLayoutManager(this)
         recyclerView.adapter = searchAdapter
@@ -148,13 +174,13 @@ class SearchActivity : AppCompatActivity() {
 
     private fun startMediaActivity(track: Track) {
         Intent(this, MediaActivity::class.java).apply {
-            putExtra("TRACK", track)
+            putExtra(Constanta.TRACK_KEY, track)
             startActivity(this)
         }
     }
 
     private fun setupHistory() {
-        searchHistory = SearchHistory(getSharedPreferences(PLAYLISTMAKER_PREFERENCES, MODE_PRIVATE))
+        searchHistory = SearchHistory(getSharedPreferences(Constanta.PLAYLISTMAKER_PREFERENCES, MODE_PRIVATE))
         clearHistoryButton.setOnClickListener {
             searchHistory.clearHistory()
             updateHistoryVisibility()
@@ -171,29 +197,48 @@ class SearchActivity : AppCompatActivity() {
         lastSearchText = text
         hideKeyboard()
 
+        searchStartTime = System.currentTimeMillis()    //удалить после тестирования или ревью
+
+        progressBar.visibility = View.VISIBLE
+        recyclerView.visibility = View.GONE
+        placeholder.visibility = View.GONE
+
         itunesApi.search(text).enqueue(object : Callback<ItunesResponse> {
             override fun onResponse(call: Call<ItunesResponse>, response: Response<ItunesResponse>) {
-                if (response.isSuccessful) {
-                    val searchResults = response.body()?.results
-                    tracks.clear()
+                val requestDuration = System.currentTimeMillis() - searchStartTime    //удалить после тестирования или ревью
+                val remainingDelay = max(0, Constanta.TEST_PROGRESSBAR_DISPLAY_TIME - requestDuration)    //удалить после тестирования или ревью
 
-                    if (!searchResults.isNullOrEmpty()) {
-                        showPlaceholder(false)
-                        tracks.addAll(searchResults)
-                        searchAdapter.notifyDataSetChanged()
+                Handler(Looper.getMainLooper()).postDelayed({    //удалить после тестирования или ревью
+                    progressBar.visibility = View.GONE
+
+                    if (response.isSuccessful) {
+                        val searchResults = response.body()?.results
+                        tracks.clear()
+
+                        if (!searchResults.isNullOrEmpty()) {
+                            showPlaceholder(false)
+                            tracks.addAll(searchResults)
+                            searchAdapter.notifyDataSetChanged()
+                        } else {
+                            showPlaceholder(true, R.drawable.placeholder_no_results,
+                                getString(R.string.nothing_found))
+                        }
                     } else {
-                        showPlaceholder(true, R.drawable.placeholder_no_results,
-                            getString(R.string.nothing_found))
+                        showPlaceholder(true, R.drawable.placeholder_error,
+                            getString(R.string.server_error))
                     }
-                } else {
-                    showPlaceholder(true, R.drawable.placeholder_error,
-                        getString(R.string.server_error))
-                }
+                }, remainingDelay)    //удалить после тестирования или ревью
             }
 
             override fun onFailure(call: Call<ItunesResponse>, t: Throwable) {
-                showPlaceholder(true, R.drawable.placeholder_error,
-                    getString(R.string.server_error))
+                val requestDuration = System.currentTimeMillis() - searchStartTime    //удалить после тестирования или ревью
+                val remainingDelay = max(0, Constanta.TEST_PROGRESSBAR_DISPLAY_TIME - requestDuration)    //удалить после тестирования или ревью
+
+                Handler(Looper.getMainLooper()).postDelayed({    //удалить после тестирования или ревью
+                    progressBar.visibility = View.GONE
+                    showPlaceholder(true, R.drawable.placeholder_error,
+                        getString(R.string.server_error))
+                }, remainingDelay)    //удалить после тестирования или ревью
             }
         })
     }
@@ -236,19 +281,15 @@ class SearchActivity : AppCompatActivity() {
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        outState.putString(KEY_SAVED_SEARCH_TEXT, currentText)
+        outState.putString(Constanta.KEY_SAVED_SEARCH_TEXT, currentText)
     }
 
     override fun onRestoreInstanceState(savedInstanceState: Bundle) {
         super.onRestoreInstanceState(savedInstanceState)
-        val savedText = savedInstanceState.getString(KEY_SAVED_SEARCH_TEXT, "")
+        val savedText = savedInstanceState.getString(Constanta.KEY_SAVED_SEARCH_TEXT, "")
         searchEditText.setText(savedText)
         currentText = savedText
         if (currentText.isNotEmpty()) startSearch(currentText)
     }
 
-    companion object {
-        private const val KEY_SAVED_SEARCH_TEXT = "SAVED_SEARCH_TEXT"
-        private const val PLAYLISTMAKER_PREFERENCES = "playlistmaker_preferences"
-    }
 }

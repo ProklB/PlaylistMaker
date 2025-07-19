@@ -39,4 +39,7 @@
     <!-- Button -->
     <color name="button_background">#1A1B22</color>
 
+    <!-- Прогрессбар -->
+    <color name="progressBar">#3772E7</color>
+
 </resources>

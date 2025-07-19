@@ -5,6 +5,7 @@
     <dimen name="margin_top_textview">20dp</dimen>
     <dimen name="artwork_square">45dp</dimen>
     <dimen name="corner_radius_button_update">54dp</dimen>
+    <dimen name="corner_radius_coverImage">8dp</dimen>
 
     <dimen name="text_size_01">16sp</dimen>
     <dimen name="text_size_02">22sp</dimen>
