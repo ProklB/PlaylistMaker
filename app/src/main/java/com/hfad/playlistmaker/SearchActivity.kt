@@ -3,6 +3,8 @@ package com.hfad.playlistmaker
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.View
@@ -13,6 +15,7 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageButton
 import android.widget.ImageView
+import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
@@ -44,6 +47,8 @@ class SearchActivity : AppCompatActivity() {
     private lateinit var historyAdapter: TrackAdapter
     private lateinit var searchAdapter: TrackAdapter
     private lateinit var clearButton: ImageButton
+    private lateinit var progressBar: ProgressBar
+    private var isClickDebounced = false
 
     private val retrofit = Retrofit.Builder()
         .baseUrl("https://itunes.apple.com")
@@ -51,6 +56,8 @@ class SearchActivity : AppCompatActivity() {
         .build()
 
     private val itunesApi = retrofit.create(ItunesApi::class.java)
+    private val handler = Handler(Looper.getMainLooper())
+    private val searchRunnable = Runnable { startSearch() }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -82,12 +89,18 @@ class SearchActivity : AppCompatActivity() {
         historyTitle = findViewById(R.id.historyTitle)
         historyRecyclerView = findViewById(R.id.historyRecyclerView)
         clearHistoryButton = findViewById(R.id.clearHistoryButton)
+        progressBar = findViewById(R.id.progressBar)
     }
 
     private fun setupToolbar() {
         val toolbar = findViewById<MaterialToolbar>(R.id.title)
         setSupportActionBar(toolbar)
         toolbar.setNavigationOnClickListener { finish() }
+    }
+
+    private fun searchDebounce() {
+        handler.removeCallbacks(searchRunnable)
+        handler.postDelayed(searchRunnable, SEARCH_DEBOUNCE_DELAY)
     }
 
     private fun setupSearchText() {
@@ -102,6 +115,7 @@ class SearchActivity : AppCompatActivity() {
                                        count: Int) {
                 clearButton.isVisible = !s.isNullOrEmpty()
                 updateHistoryVisibility()
+                searchDebounce()
             }
             override fun afterTextChanged(s: Editable?) {
                 currentText = s.toString()
@@ -133,8 +147,16 @@ class SearchActivity : AppCompatActivity() {
 
     private fun setupAdapters() {
         searchAdapter = TrackAdapter(tracks) { track ->
-            addToHistory(track)
-            startMediaActivity(track)
+            if (!isClickDebounced) {
+                isClickDebounced = true
+                addToHistory(track)
+                startMediaActivity(track)
+
+                Handler(Looper.getMainLooper()).postDelayed({
+                    isClickDebounced = false
+                }, CLICK_DEBOUNCE_DELAY)
+            }
+
         }
         recyclerView.layoutManager = LinearLayoutManager(this)
         recyclerView.adapter = searchAdapter
@@ -148,7 +170,7 @@ class SearchActivity : AppCompatActivity() {
 
     private fun startMediaActivity(track: Track) {
         Intent(this, MediaActivity::class.java).apply {
-            putExtra("TRACK", track)
+            putExtra(TRACK_KEY, track)
             startActivity(this)
         }
     }
@@ -171,29 +193,36 @@ class SearchActivity : AppCompatActivity() {
         lastSearchText = text
         hideKeyboard()
 
+        progressBar.visibility = View.VISIBLE
+        recyclerView.visibility = View.GONE
+        placeholder.visibility = View.GONE
+
         itunesApi.search(text).enqueue(object : Callback<ItunesResponse> {
             override fun onResponse(call: Call<ItunesResponse>, response: Response<ItunesResponse>) {
-                if (response.isSuccessful) {
-                    val searchResults = response.body()?.results
-                    tracks.clear()
+                    progressBar.visibility = View.GONE
 
-                    if (!searchResults.isNullOrEmpty()) {
-                        showPlaceholder(false)
-                        tracks.addAll(searchResults)
-                        searchAdapter.notifyDataSetChanged()
+                    if (response.isSuccessful) {
+                        val searchResults = response.body()?.results
+                        tracks.clear()
+
+                        if (!searchResults.isNullOrEmpty()) {
+                            showPlaceholder(false)
+                            tracks.addAll(searchResults)
+                            searchAdapter.notifyDataSetChanged()
+                        } else {
+                            showPlaceholder(true, R.drawable.placeholder_no_results,
+                                getString(R.string.nothing_found))
+                        }
                     } else {
-                        showPlaceholder(true, R.drawable.placeholder_no_results,
-                            getString(R.string.nothing_found))
+                        showPlaceholder(true, R.drawable.placeholder_error,
+                            getString(R.string.server_error))
                     }
-                } else {
-                    showPlaceholder(true, R.drawable.placeholder_error,
-                        getString(R.string.server_error))
-                }
             }
 
             override fun onFailure(call: Call<ItunesResponse>, t: Throwable) {
+                progressBar.visibility = View.GONE
                 showPlaceholder(true, R.drawable.placeholder_error,
-                    getString(R.string.server_error))
+                        getString(R.string.server_error))
             }
         })
     }
@@ -250,5 +279,9 @@ class SearchActivity : AppCompatActivity() {
     companion object {
         private const val KEY_SAVED_SEARCH_TEXT = "SAVED_SEARCH_TEXT"
         private const val PLAYLISTMAKER_PREFERENCES = "playlistmaker_preferences"
+        const val TRACK_KEY = "TRACK"
+        private const val SEARCH_DEBOUNCE_DELAY = 2000L
+        private const val CLICK_DEBOUNCE_DELAY = 500L
     }
+
 }

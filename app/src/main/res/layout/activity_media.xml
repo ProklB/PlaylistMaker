@@ -93,6 +93,7 @@
         android:layout_height="100dp"
         android:background="@drawable/round_button"
         android:src="@drawable/button_play"
+        android:enabled="false"
         app:layout_constraintBottom_toTopOf="@id/progressText"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -113,13 +114,13 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textSize="14sp"
-        android:text="00:00"
+        android:text="@string/media_progressText"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintBottom_toTopOf="@id/trackTimeMillsLabel"
         android:layout_marginBottom="30dp"
         android:textAppearance="@style/trackInfoText"
-        tools:text="00:00"/>
+        tools:text="@string/media_progressText"/>
 
     <TextView
         android:id="@+id/trackTimeMillsLabel"
