@@ -1,4 +1,4 @@
-package com.hfad.playlistmaker
+package com.hfad.playlistmaker.presentation.media
 
 import android.media.MediaPlayer
 import android.os.Bundle
@@ -12,13 +12,16 @@ import androidx.appcompat.app.AppCompatActivity
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.google.android.material.appbar.MaterialToolbar
+import com.hfad.playlistmaker.R
+import com.hfad.playlistmaker.domain.models.Track
+import com.hfad.playlistmaker.presentation.search.SearchActivity
 import java.text.SimpleDateFormat
 import java.util.Locale
 
 class MediaActivity : AppCompatActivity() {
 
     private var playerState = PlayerState.DEFAULT
-    private lateinit var mediaPlayer: MediaPlayer
+    private var mediaPlayer: MediaPlayer? = null
     private lateinit var playButton: ImageButton
     private lateinit var progressText: TextView
     private lateinit var handler: Handler
@@ -36,7 +39,7 @@ class MediaActivity : AppCompatActivity() {
             override fun run() {
                 if (playerState == PlayerState.PLAYING) {
                     val timeFormat = SimpleDateFormat("mm:ss", Locale.getDefault())
-                    progressText.text = timeFormat.format(mediaPlayer.currentPosition)
+                    progressText.text = timeFormat.format(mediaPlayer?.currentPosition)
                     handler.postDelayed(this, PROGRESS_UPDATE_DELAY)
                 }
             }
@@ -104,7 +107,10 @@ class MediaActivity : AppCompatActivity() {
     }
 
     private fun preparePlayer() {
-        val track = intent.getParcelableExtra<Track>(SearchActivity.TRACK_KEY) ?: return
+        val track = intent.getParcelableExtra<Track>(SearchActivity.TRACK_KEY) ?: run {
+            finish() // Закрываем активность, если трек не передан
+            return
+        }
 
         mediaPlayer = MediaPlayer().apply {
             setDataSource(track.previewUrl)
@@ -130,19 +136,22 @@ class MediaActivity : AppCompatActivity() {
         when(playerState) {
             PlayerState.PLAYING -> pausePlayer()
             PlayerState.PREPARED, PlayerState.PAUSED -> startPlayer()
-            PlayerState.DEFAULT -> TODO()
+            PlayerState.DEFAULT -> {
+                playerState = PlayerState.PREPARED
+                startPlayer()
+            }
         }
     }
 
     private fun startPlayer() {
-        mediaPlayer.start()
+        mediaPlayer?.start()
         playButton.setImageResource(R.drawable.button_pause)
         playerState = PlayerState.PLAYING
         handler.post(updateProgressRunnable)
     }
 
     private fun pausePlayer() {
-        mediaPlayer.pause()
+        mediaPlayer?.pause()
         playButton.setImageResource(R.drawable.button_play)
         playerState = PlayerState.PAUSED
         handler.removeCallbacks(updateProgressRunnable)
@@ -158,11 +167,11 @@ class MediaActivity : AppCompatActivity() {
     override fun onDestroy() {
         super.onDestroy()
         handler.removeCallbacks(updateProgressRunnable)
-        mediaPlayer.release()
+        mediaPlayer?.release()
+        mediaPlayer = null
     }
 
     companion object {
-
         private const val PROGRESS_UPDATE_DELAY = 300L
     }
 

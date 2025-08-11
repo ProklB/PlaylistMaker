@@ -1,10 +1,6 @@
-package com.hfad.playlistmaker
+package com.hfad.playlistmaker.data.dto
 
-import android.os.Parcelable
-import kotlinx.parcelize.Parcelize
-
-@Parcelize
-data class Track(
+data class TrackDto (
     val trackId: Int,
     val trackName: String,
     val artistName: String,
@@ -15,6 +11,4 @@ data class Track(
     val primaryGenreName: String?,
     val country: String?,
     val previewUrl: String
-): Parcelable {
-    fun getCoverArtwork() = artworkUrl100.replaceAfterLast('/', "512x512bb.jpg")
-    }
+)
