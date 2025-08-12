@@ -18,7 +18,6 @@ class SettingsActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_settings)
 
-        // Инициализация ViewModel через Creator
         viewModel = ViewModelProvider(this, SettingsViewModelFactory(
             Creator.provideSettingsInteractor(
                 application

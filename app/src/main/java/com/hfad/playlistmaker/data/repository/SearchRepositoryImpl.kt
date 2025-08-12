@@ -1,4 +1,4 @@
-package com.hfad.playlistmaker.data.repositiry
+package com.hfad.playlistmaker.data.repository
 
 import com.hfad.playlistmaker.data.network.RetrofitNetworkClient
 import com.hfad.playlistmaker.domain.models.Track

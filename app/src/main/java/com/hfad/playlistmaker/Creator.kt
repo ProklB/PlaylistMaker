@@ -3,8 +3,8 @@ package com.hfad.playlistmaker
 import android.app.Application
 import android.content.Context
 import com.hfad.playlistmaker.data.network.RetrofitNetworkClient
-import com.hfad.playlistmaker.data.repositiry.SearchRepositoryImpl
-import com.hfad.playlistmaker.data.repositiry.SettingsRepositoryImpl
+import com.hfad.playlistmaker.data.repository.SearchRepositoryImpl
+import com.hfad.playlistmaker.data.repository.SettingsRepositoryImpl
 import com.hfad.playlistmaker.data.repository.SearchHistoryRepositoryImpl
 import com.hfad.playlistmaker.domain.interactor.SearchHistoryInteractor
 import com.hfad.playlistmaker.domain.interactor.SearchHistoryInteractorImpl

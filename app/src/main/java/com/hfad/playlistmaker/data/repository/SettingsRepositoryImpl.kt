@@ -1,4 +1,4 @@
-package com.hfad.playlistmaker.data.repositiry
+package com.hfad.playlistmaker.data.repository
 
 import android.content.SharedPreferences
 import com.hfad.playlistmaker.domain.models.Settings
