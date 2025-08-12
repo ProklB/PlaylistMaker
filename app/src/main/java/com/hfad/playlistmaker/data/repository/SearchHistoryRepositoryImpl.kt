@@ -1,30 +1,34 @@
-package com.hfad.playlistmaker
+package com.hfad.playlistmaker.data.repository
 
 import android.content.SharedPreferences
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import com.hfad.playlistmaker.domain.models.Track
+import com.hfad.playlistmaker.domain.repository.SearchHistoryRepository
 
-const val HISTORY_SIZE = 10
+class SearchHistoryRepositoryImpl(
+    private val sharedPreferences: SharedPreferences
+) : SearchHistoryRepository {
 
-class SearchHistory(private val sharedPreferences: SharedPreferences) {
     private val gson = Gson()
     private val historyKey = "search_history"
+    private val maxHistorySize = 10
 
-    fun addTrack(track: Track) {
-        val history = getHistory().toMutableList()
+    override fun addTrackToHistory(track: Track) {
+        val history = getSearchHistory().toMutableList()
 
         history.removeAll { it.trackId == track.trackId }
 
         history.add(0, track)
 
-        if (history.size > HISTORY_SIZE) {
+        if (history.size > maxHistorySize) {
             history.removeAt(history.size - 1)
         }
 
         saveHistory(history)
     }
 
-    fun getHistory(): List<Track> {
+    override fun getSearchHistory(): List<Track> {
         val json = sharedPreferences.getString(historyKey, null)
         return if (json != null) {
             val type = object : TypeToken<List<Track>>() {}.type
@@ -34,7 +38,7 @@ class SearchHistory(private val sharedPreferences: SharedPreferences) {
         }
     }
 
-    fun clearHistory() {
+    override fun clearSearchHistory() {
         sharedPreferences.edit().remove(historyKey).apply()
     }
 

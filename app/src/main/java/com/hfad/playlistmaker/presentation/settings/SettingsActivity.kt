@@ -1,49 +1,66 @@
-package com.hfad.playlistmaker
+package com.hfad.playlistmaker.presentation.settings
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import android.view.View
-import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.ViewModelProvider
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.switchmaterial.SwitchMaterial
 import com.google.android.material.textview.MaterialTextView
+import com.hfad.playlistmaker.Creator
+import com.hfad.playlistmaker.R
 
 class SettingsActivity : AppCompatActivity() {
+
+    private lateinit var viewModel: SettingsViewModel
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_settings)
 
+        viewModel = ViewModelProvider(this, SettingsViewModelFactory(
+            Creator.provideSettingsInteractor(
+                application
+            )
+        ))
+            .get(SettingsViewModel::class.java)
+
+        setupToolbar()
+        setupViews()
+        observeViewModel()
+    }
+
+    private fun setupToolbar() {
         val toolbar = findViewById<MaterialToolbar>(R.id.title)
         setSupportActionBar(toolbar)
+        toolbar.setNavigationOnClickListener { finish() }
+    }
 
+    private fun setupViews() {
         val themeSwitcher = findViewById<SwitchMaterial>(R.id.themeSwitcher)
-
-        themeSwitcher.isChecked = (applicationContext as App).darkTheme
-        themeSwitcher.setOnCheckedChangeListener { switcher, checked ->
-            (applicationContext as App).switchTheme(checked)
+        themeSwitcher.setOnCheckedChangeListener { _, isChecked ->
+            viewModel.onThemeSwitchChanged(isChecked)
         }
 
-        toolbar.setNavigationOnClickListener {
-            finish()
-        }
-
-        val settings_share = findViewById<MaterialTextView>(R.id.settings_share)
-        settings_share.setOnClickListener {
+        findViewById<MaterialTextView>(R.id.settings_share).setOnClickListener {
             shareApp()
         }
 
-        val settings_support = findViewById<MaterialTextView>(R.id.settings_support)
-        settings_support.setOnClickListener {
+        findViewById<MaterialTextView>(R.id.settings_support).setOnClickListener {
             contactSupport()
         }
 
-        val settings_agreement = findViewById<MaterialTextView>(R.id.settings_agreement)
-        settings_agreement.setOnClickListener {
+        findViewById<MaterialTextView>(R.id.settings_agreement).setOnClickListener {
             openUserAgreement()
         }
-
     }
+
+    private fun observeViewModel() {
+        viewModel.themeSwitchState.observe(this) { isDarkTheme ->
+            findViewById<SwitchMaterial>(R.id.themeSwitcher).isChecked = isDarkTheme
+        }
+    }
+
     private fun shareApp() {
         val shareMessage = getString(R.string.share_message, getString(R.string.share_link))
         val shareIntent = Intent(Intent.ACTION_SEND).apply {

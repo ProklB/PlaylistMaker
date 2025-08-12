@@ -1,9 +1,13 @@
-package com.hfad.playlistmaker
+package com.hfad.playlistmaker.presentation.main
 
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
+import com.hfad.playlistmaker.R
+import com.hfad.playlistmaker.presentation.media.MediaActivity
+import com.hfad.playlistmaker.presentation.search.SearchActivity
+import com.hfad.playlistmaker.presentation.settings.SettingsActivity
 
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
