@@ -1,17 +1,22 @@
 package com.hfad.playlistmaker
 
 import android.app.Application
-import com.hfad.playlistmaker.domain.interactor.SettingsInteractor
+import androidx.appcompat.app.AppCompatDelegate
+import com.hfad.playlistmaker.creator.Creator
 
 class App : Application() {
-
-    private lateinit var settingsInteractor: SettingsInteractor
-
     override fun onCreate() {
         super.onCreate()
 
-        settingsInteractor = Creator.provideSettingsInteractor(this)
+        val settingsInteractor = Creator.provideSettingsInteractor(this)
         val settings = settingsInteractor.getThemeSettings()
-        settingsInteractor.applyTheme(settings)
+
+        AppCompatDelegate.setDefaultNightMode(
+            if (settings.darkThemeEnabled) {
+                AppCompatDelegate.MODE_NIGHT_YES
+            } else {
+                AppCompatDelegate.MODE_NIGHT_NO
+            }
+        )
     }
 }
