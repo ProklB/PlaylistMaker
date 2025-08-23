@@ -83,7 +83,7 @@ class MediaActivity : AppCompatActivity() {
                 .load(track.getCoverArtwork())
                 .placeholder(R.drawable.playsholder_play_light)
                 .centerCrop()
-                .transform(RoundedCorners(R.dimen.corner_radius_coverImage))
+                .transform(RoundedCorners(resources.getDimensionPixelSize(R.dimen.corner_radius_coverImage)))
                 .into(coverImage)
         } else {
             coverImage.setImageResource(R.drawable.playsholder_play_light)
