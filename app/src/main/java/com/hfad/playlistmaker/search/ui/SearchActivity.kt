@@ -71,7 +71,6 @@ class SearchActivity : AppCompatActivity() {
             currentText = it.getString(KEY_CURRENT_TEXT, "")
             lastSearchText = it.getString(KEY_LAST_SEARCH_TEXT, "")
             isSearchPerformed = it.getBoolean(KEY_IS_SEARCH_PERFORMED, false)
-
             binding.searchEditText.setText(currentText)
         }
     }
@@ -105,10 +104,8 @@ class SearchActivity : AppCompatActivity() {
         viewModel.historyState.observe(this) { history ->
             if (history.isNotEmpty() && !isSearchPerformed && currentText.isEmpty()) {
                 showHistory(history)
-                binding.clearHistoryButton.visibility = View.VISIBLE
             } else {
                 hideHistory()
-                binding.clearHistoryButton.visibility = View.GONE
             }
         }
     }
@@ -123,12 +120,10 @@ class SearchActivity : AppCompatActivity() {
         binding.trackList.visibility = View.GONE
         binding.placeholder.visibility = View.GONE
         historyAdapter.updateTracks(history)
-        binding.clearHistoryButton.visibility = View.VISIBLE
     }
 
     private fun hideHistory() {
         binding.historyViewGroup.visibility = View.GONE
-        binding.clearHistoryButton.visibility = View.GONE
     }
 
     private fun onTrackClick(track: Track) {
@@ -165,7 +160,6 @@ class SearchActivity : AppCompatActivity() {
             viewModel.loadSearchHistory()
         }
 
-        // Добавить обработчик для кнопки очистки истории
         binding.clearHistoryButton.setOnClickListener {
             viewModel.clearSearchHistory()
         }

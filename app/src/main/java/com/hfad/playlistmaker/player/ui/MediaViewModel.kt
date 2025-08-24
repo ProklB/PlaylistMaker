@@ -55,7 +55,7 @@ class MediaViewModel(
                         _currentPosition.postValue(playerInteractor.getCurrentPosition())
                     }
                 }
-            }, 0, 300)
+            }, 0, PROGRESS_UPDATE_DELAY)
         }
     }
 
@@ -63,5 +63,9 @@ class MediaViewModel(
         super.onCleared()
         timer?.cancel()
         playerInteractor.releasePlayer()
+    }
+
+    companion object {
+        private const val PROGRESS_UPDATE_DELAY = 300L
     }
 }
