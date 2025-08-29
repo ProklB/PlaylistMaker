@@ -10,10 +10,8 @@ import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.widget.addTextChangedListener
-import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.appbar.MaterialToolbar
-import com.hfad.playlistmaker.creator.Creator
 import com.hfad.playlistmaker.R
 import com.hfad.playlistmaker.databinding.ActivitySearchBinding
 import com.hfad.playlistmaker.player.ui.MediaActivity
@@ -21,12 +19,13 @@ import com.hfad.playlistmaker.search.domain.models.Track
 import com.hfad.playlistmaker.search.ui.adapter.TrackAdapter
 import com.hfad.playlistmaker.search.ui.viewmodel.SearchState
 import com.hfad.playlistmaker.search.ui.viewmodel.SearchViewModel
-import com.hfad.playlistmaker.search.ui.viewmodel.SearchViewModelFactory
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class SearchActivity : AppCompatActivity() {
 
+    private val viewModel: SearchViewModel by viewModel()
+
     private lateinit var binding: ActivitySearchBinding
-    private lateinit var viewModel: SearchViewModel
     private lateinit var adapter: TrackAdapter
     private lateinit var historyAdapter: TrackAdapter
 
@@ -50,11 +49,6 @@ class SearchActivity : AppCompatActivity() {
         binding.historyRecyclerView.adapter = historyAdapter
 
         restoreState(savedInstanceState)
-
-        viewModel = ViewModelProvider(this, SearchViewModelFactory(
-            Creator.provideSearchInteractor(),
-            Creator.provideSearchHistoryInteractor(this)
-        )).get(SearchViewModel::class.java)
 
         setupViews()
         setupObservers()

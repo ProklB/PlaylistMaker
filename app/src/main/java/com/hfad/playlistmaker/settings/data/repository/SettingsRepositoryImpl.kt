@@ -1,12 +1,18 @@
 package com.hfad.playlistmaker.settings.data.repository
 
-import android.content.SharedPreferences
+import android.app.Application
+import android.content.Context
 import com.hfad.playlistmaker.settings.domain.models.Settings
 import com.hfad.playlistmaker.settings.domain.repository.SettingsRepository
 
 class SettingsRepositoryImpl(
-    private val sharedPreferences: SharedPreferences
+    application: Application
 ) : SettingsRepository {
+
+    private val sharedPreferences = application.getSharedPreferences(
+        PLAYLISTMAKER_PREFERENCES,
+        Context.MODE_PRIVATE
+    )
 
     override fun getSettings(): Settings {
         val darkTheme = sharedPreferences.getBoolean(THEME_SWITCHER_KEY, false)
@@ -19,8 +25,8 @@ class SettingsRepositoryImpl(
             .apply()
     }
 
-    companion object {
-        const val PLAYLISTMAKER_PREFERENCES = "playlistmaker_preferences"
-        const val THEME_SWITCHER_KEY = "theme_switcher_key"
-    }
+companion object {
+    const val PLAYLISTMAKER_PREFERENCES = "app_preferences"
+    const val THEME_SWITCHER_KEY = "theme_switcher_key"
+}
 }
