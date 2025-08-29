@@ -1,7 +1,6 @@
 package com.hfad.playlistmaker.search.data.repository
 
 import com.hfad.playlistmaker.search.data.network.NetworkClient
-import com.hfad.playlistmaker.search.data.network.RetrofitNetworkClient
 import com.hfad.playlistmaker.search.domain.models.Track
 import com.hfad.playlistmaker.search.domain.repository.SearchRepository
 

@@ -5,15 +5,17 @@ import com.hfad.playlistmaker.player.domain.models.PlayerState
 import com.hfad.playlistmaker.player.domain.repository.PlayerRepository
 import java.io.IOException
 
-class PlayerRepositoryImpl : PlayerRepository {
+class PlayerRepositoryImpl(
+    private val mediaPlayer: MediaPlayer
+) : PlayerRepository {
 
-    private var mediaPlayer: MediaPlayer? = null
     private var playerState: PlayerState = PlayerState.DEFAULT
     private var onPreparedListener: (() -> Unit)? = null
 
     override fun preparePlayer(previewUrl: String) {
-        mediaPlayer = MediaPlayer().apply {
+        mediaPlayer.apply {
             try {
+                reset()
                 setDataSource(previewUrl)
                 prepareAsync()
                 setOnPreparedListener {
@@ -34,23 +36,22 @@ class PlayerRepositoryImpl : PlayerRepository {
     }
 
     override fun startPlayer() {
-        mediaPlayer?.start()
+        mediaPlayer.start()
         playerState = PlayerState.PLAYING
     }
 
     override fun pausePlayer() {
-        mediaPlayer?.pause()
+        mediaPlayer.pause()
         playerState = PlayerState.PAUSED
     }
 
     override fun releasePlayer() {
-        mediaPlayer?.release()
-        mediaPlayer = null
+        mediaPlayer.release()
         playerState = PlayerState.DEFAULT
     }
 
     override fun getCurrentPosition(): Int {
-        return mediaPlayer?.currentPosition ?: 0
+        return mediaPlayer.currentPosition
     }
 
     override fun getPlayerState(): PlayerState {

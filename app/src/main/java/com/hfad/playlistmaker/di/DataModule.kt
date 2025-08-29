@@ -2,6 +2,7 @@ package com.hfad.playlistmaker.di
 
 import android.content.Context
 import android.content.SharedPreferences
+import android.media.MediaPlayer
 import com.google.gson.Gson
 import com.hfad.playlistmaker.player.data.repository.PlayerRepositoryImpl
 import com.hfad.playlistmaker.player.domain.repository.PlayerRepository
@@ -42,11 +43,11 @@ val dataModule = module {
         RetrofitNetworkClient(get())
     }
 
-    single<SearchRepository> {
+    factory<SearchRepository> {
         SearchRepositoryImpl(get())
     }
 
-    single<SearchHistoryRepository> {
+    factory<SearchHistoryRepository> {
         SearchHistoryRepositoryImpl(get(), get())
     }
 
@@ -54,7 +55,9 @@ val dataModule = module {
         SettingsRepositoryImpl(get())
     }
 
-    single<PlayerRepository> {
-        PlayerRepositoryImpl()
+    factory { MediaPlayer() }
+
+    factory<PlayerRepository> {
+        PlayerRepositoryImpl(get())
     }
 }
