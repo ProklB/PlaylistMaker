@@ -6,21 +6,20 @@ import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.ViewModelProvider
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.google.android.material.appbar.MaterialToolbar
 import com.hfad.playlistmaker.R
-import com.hfad.playlistmaker.creator.Creator
 import com.hfad.playlistmaker.player.domain.models.PlayerState
 import com.hfad.playlistmaker.search.domain.models.Track
 import com.hfad.playlistmaker.search.ui.SearchActivity
 import java.text.SimpleDateFormat
 import java.util.Locale
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class MediaActivity : AppCompatActivity() {
+    private val viewModel: MediaViewModel by viewModel()
 
-    private lateinit var viewModel: MediaViewModel
     private lateinit var playButton: ImageButton
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -30,9 +29,6 @@ class MediaActivity : AppCompatActivity() {
         playButton = findViewById(R.id.playButton)
 
         val track = intent.getParcelableExtra<Track>(SearchActivity.TRACK_KEY) ?: return
-
-        val factory = MediaViewModelFactory(Creator.providePlayerInteractor())
-        viewModel = ViewModelProvider(this, factory).get(MediaViewModel::class.java)
 
         viewModel.playerState.observe(this) { state ->
             updatePlayButton(state)

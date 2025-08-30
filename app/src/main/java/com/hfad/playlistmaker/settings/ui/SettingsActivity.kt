@@ -5,25 +5,20 @@ import android.net.Uri
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
-import androidx.lifecycle.ViewModelProvider
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.switchmaterial.SwitchMaterial
 import com.google.android.material.textview.MaterialTextView
 import com.hfad.playlistmaker.R
-import com.hfad.playlistmaker.creator.Creator
 import com.hfad.playlistmaker.settings.domain.models.Settings
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class SettingsActivity : AppCompatActivity() {
 
-    private lateinit var viewModel: SettingsViewModel
+    private val viewModel: SettingsViewModel by viewModel()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_settings)
-
-        viewModel = ViewModelProvider(this, SettingsViewModelFactory(
-            Creator.provideSettingsInteractor(application)
-        )).get(SettingsViewModel::class.java)
 
         setupToolbar()
         setupViews()
