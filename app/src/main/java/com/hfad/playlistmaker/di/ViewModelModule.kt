@@ -1,5 +1,7 @@
 package com.hfad.playlistmaker.di
 
+import com.hfad.playlistmaker.library.ui.viewmodel.FavoritesViewModel
+import com.hfad.playlistmaker.library.ui.viewmodel.PlaylistsViewModel
 import com.hfad.playlistmaker.player.ui.MediaViewModel
 import com.hfad.playlistmaker.search.ui.viewmodel.SearchViewModel
 import com.hfad.playlistmaker.settings.ui.SettingsViewModel
@@ -18,5 +20,11 @@ val viewModelModule = module {
 
     viewModel {
         SettingsViewModel(get())
+    }
+    viewModel {
+        PlaylistsViewModel()
+    }
+    viewModel {
+        FavoritesViewModel()
     }
 }

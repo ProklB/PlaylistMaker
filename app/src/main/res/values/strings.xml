@@ -40,4 +40,13 @@
     <string name="media_country">Страна</string>
     <string name="media_progressText">00:00</string>
 
+    <!-- Первый фрагмент и медиатека -->
+    <string name="library_title">Медиатека</string>
+    <string name="playlists_tab">Плейлисты</string>
+    <string name="favorites_tab">Избранные треки</string>
+
+    <string name="no_playlists_title">Вы не создали\nни одного плейлиста</string>
+    <string name="no_favorites_title">Ваша медиатека пуста</string>
+    <string name="create_playlist">Новый плейлист</string>
+
 </resources>

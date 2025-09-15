@@ -15,4 +15,8 @@
     <color name="placeholder_text">#1A1B22</color>
     <color name="placeholder_background">#FFFFFF</color>
     <color name="button_background">#ffffff</color>
+    <!-- Первый фрагмент и медиатека -->
+    <color name="tab_text">#FFFFFF</color>
+    <color name="tab_selected_text">#FFFFFF</color>
+    <color name="tab_indicator">#FFFFFF</color>
 </resources>
