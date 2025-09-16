@@ -3,7 +3,6 @@ package com.hfad.playlistmaker.library.ui
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
 import com.hfad.playlistmaker.R
 import com.hfad.playlistmaker.databinding.FragmentPlaylistsBinding
 import com.hfad.playlistmaker.library.ui.viewmodel.PlaylistsViewModel
@@ -14,10 +13,6 @@ class PlaylistsFragment : Fragment(R.layout.fragment_playlists) {
     private var _binding: FragmentPlaylistsBinding? = null
     private val binding get() = _binding!!
     private val viewModel: PlaylistsViewModel by viewModel()
-
-    companion object {
-        fun newInstance() = PlaylistsFragment()
-    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -40,5 +35,9 @@ class PlaylistsFragment : Fragment(R.layout.fragment_playlists) {
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+    }
+
+    companion object {
+        fun newInstance() = PlaylistsFragment()
     }
 }

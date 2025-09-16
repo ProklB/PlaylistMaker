@@ -21,7 +21,8 @@
         app:tabTextAppearance="@style/CapsTabLayout"
         app:tabTextColor="@color/tab_text"
         app:tabSelectedTextColor="@color/tab_selected_text"
-        app:tabIndicatorColor="@color/tab_indicator" />
+        app:tabIndicatorColor="@color/tab_indicator"
+        android:background="@color/tab_background"/>
 
     <androidx.viewpager2.widget.ViewPager2
         android:id="@+id/viewPager"

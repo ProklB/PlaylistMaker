@@ -19,4 +19,5 @@
     <color name="tab_text">#FFFFFF</color>
     <color name="tab_selected_text">#FFFFFF</color>
     <color name="tab_indicator">#FFFFFF</color>
+    <color name="tab_background">#1A1B22</color>
 </resources>

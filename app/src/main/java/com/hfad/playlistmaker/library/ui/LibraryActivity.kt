@@ -1,14 +1,11 @@
 package com.hfad.playlistmaker.library.ui
 
-import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.tabs.TabLayoutMediator
 import com.hfad.playlistmaker.R
 import com.hfad.playlistmaker.databinding.ActivityLibraryBinding
 import com.hfad.playlistmaker.library.ui.adapter.LibraryPagerAdapter
-import com.hfad.playlistmaker.main.ui.MainActivity
 
 class LibraryActivity : AppCompatActivity() {
 
@@ -37,8 +34,7 @@ class LibraryActivity : AppCompatActivity() {
         tabMediator = TabLayoutMediator(binding.tabLayout, binding.viewPager) { tab, position ->
             tab.text = when (position) {
                 0 -> getString(R.string.favorites_tab)
-                1 -> getString(R.string.playlists_tab)
-                else -> ""
+                else -> getString(R.string.playlists_tab)
             }
         }
         tabMediator.attach()
