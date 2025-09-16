@@ -5,7 +5,7 @@ import android.os.Bundle
 import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
 import com.hfad.playlistmaker.R
-import com.hfad.playlistmaker.player.ui.MediaActivity
+import com.hfad.playlistmaker.library.ui.LibraryActivity
 import com.hfad.playlistmaker.search.ui.SearchActivity
 import com.hfad.playlistmaker.settings.ui.SettingsActivity
 
@@ -22,7 +22,7 @@ class MainActivity : AppCompatActivity() {
 
         val button2 = findViewById<Button>(R.id.button2)
         button2.setOnClickListener {
-            val intent = Intent(this, MediaActivity::class.java)
+            val intent = Intent(this, LibraryActivity::class.java)
             startActivity(intent)
         }
 
