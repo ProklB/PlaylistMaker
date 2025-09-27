@@ -102,4 +102,12 @@
         <item name="android:textAllCaps">false</item>
     </style>
 
+    <style name="BottomNavigationTextActive" parent="TextAppearance.MaterialComponents.Caption">
+        <item name="android:textSize">@dimen/text_size_06</item>
+    </style>
+
+    <style name="BottomNavigationTextInactive" parent="TextAppearance.MaterialComponents.Caption">
+        <item name="android:textSize">@dimen/text_size_06</item>
+    </style>
+
 </resources>
