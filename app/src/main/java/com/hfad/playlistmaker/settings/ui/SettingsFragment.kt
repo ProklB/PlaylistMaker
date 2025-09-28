@@ -1,58 +1,56 @@
 package com.hfad.playlistmaker.settings.ui
 
+import android.os.Bundle
+import androidx.fragment.app.Fragment
+import android.view.View
+import com.hfad.playlistmaker.R
 import android.content.Intent
 import android.net.Uri
-import android.os.Bundle
-import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
-import com.google.android.material.appbar.MaterialToolbar
-import com.google.android.material.switchmaterial.SwitchMaterial
-import com.google.android.material.textview.MaterialTextView
-import com.hfad.playlistmaker.R
+import com.hfad.playlistmaker.databinding.FragmentSettingsBinding
 import com.hfad.playlistmaker.settings.domain.models.Settings
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
-class SettingsActivity : AppCompatActivity() {
+class SettingsFragment : Fragment(R.layout.fragment_settings) {
 
     private val viewModel: SettingsViewModel by viewModel()
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_settings)
+    private var _binding: FragmentSettingsBinding? = null
+    private val binding get() = _binding!!
 
-        setupToolbar()
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        _binding = FragmentSettingsBinding.bind(view)
+
         setupViews()
         observeViewModel()
     }
 
-    private fun setupToolbar() {
-        val toolbar = findViewById<MaterialToolbar>(R.id.title)
-        setSupportActionBar(toolbar)
-        toolbar.setNavigationOnClickListener { finish() }
-    }
-
     private fun setupViews() {
-        val themeSwitcher = findViewById<SwitchMaterial>(R.id.themeSwitcher)
-        themeSwitcher.setOnCheckedChangeListener { _, isChecked ->
+        binding.title.setNavigationOnClickListener {
+            requireActivity().supportFragmentManager.popBackStack()
+        }
+
+        binding.themeSwitcher.setOnCheckedChangeListener { _, isChecked ->
             viewModel.onThemeSwitchChanged(isChecked)
         }
 
-        findViewById<MaterialTextView>(R.id.settings_share).setOnClickListener {
+        binding.settingsShare.setOnClickListener {
             shareApp()
         }
 
-        findViewById<MaterialTextView>(R.id.settings_support).setOnClickListener {
+        binding.settingsSupport.setOnClickListener {
             contactSupport()
         }
 
-        findViewById<MaterialTextView>(R.id.settings_agreement).setOnClickListener {
+        binding.settingsAgreement.setOnClickListener {
             openUserAgreement()
         }
     }
 
     private fun observeViewModel() {
-        viewModel.themeSwitchState.observe(this) { isDarkTheme ->
-            findViewById<SwitchMaterial>(R.id.themeSwitcher).isChecked = isDarkTheme
+        viewModel.themeSwitchState.observe(viewLifecycleOwner) { isDarkTheme ->
+            binding.themeSwitcher.isChecked = isDarkTheme
             applyTheme(Settings(isDarkTheme))
         }
     }
@@ -90,5 +88,14 @@ class SettingsActivity : AppCompatActivity() {
                 AppCompatDelegate.MODE_NIGHT_NO
             }
         )
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
+
+    companion object {
+        fun newInstance() = SettingsFragment()
     }
 }

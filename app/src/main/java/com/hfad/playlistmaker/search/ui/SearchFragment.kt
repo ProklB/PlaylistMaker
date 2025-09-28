@@ -1,31 +1,31 @@
 package com.hfad.playlistmaker.search.ui
 
 import android.content.Context
-import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.widget.addTextChangedListener
+import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.google.android.material.appbar.MaterialToolbar
 import com.hfad.playlistmaker.R
-import com.hfad.playlistmaker.databinding.ActivitySearchBinding
-import com.hfad.playlistmaker.player.ui.MediaActivity
+import com.hfad.playlistmaker.databinding.FragmentSearchBinding
 import com.hfad.playlistmaker.search.domain.models.Track
 import com.hfad.playlistmaker.search.ui.adapter.TrackAdapter
 import com.hfad.playlistmaker.search.ui.viewmodel.SearchState
 import com.hfad.playlistmaker.search.ui.viewmodel.SearchViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
-class SearchActivity : AppCompatActivity() {
+class SearchFragment : Fragment(R.layout.fragment_search) {
 
     private val viewModel: SearchViewModel by viewModel()
 
-    private lateinit var binding: ActivitySearchBinding
+    private var _binding: FragmentSearchBinding? = null
+    private val binding get() = _binding!!
+
     private lateinit var adapter: TrackAdapter
     private lateinit var historyAdapter: TrackAdapter
 
@@ -37,15 +37,14 @@ class SearchActivity : AppCompatActivity() {
     private val handler = Handler(Looper.getMainLooper())
     private val searchRunnable = Runnable { startSearch() }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        binding = ActivitySearchBinding.inflate(layoutInflater)
-        setContentView(binding.root)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        _binding = FragmentSearchBinding.bind(view)
 
         adapter = TrackAdapter(emptyList()) { track -> onTrackClick(track) }
         historyAdapter = TrackAdapter(emptyList()) { track -> onTrackClick(track) }
 
-        binding.historyRecyclerView.layoutManager = LinearLayoutManager(this)
+        binding.historyRecyclerView.layoutManager = LinearLayoutManager(requireContext())
         binding.historyRecyclerView.adapter = historyAdapter
 
         restoreState(savedInstanceState)
@@ -53,7 +52,6 @@ class SearchActivity : AppCompatActivity() {
         setupViews()
         setupObservers()
         setupListeners()
-        setupToolbar()
 
         if (isSearchPerformed && lastSearchText.isNotEmpty()) {
             startSearch(lastSearchText)
@@ -77,7 +75,7 @@ class SearchActivity : AppCompatActivity() {
     }
 
     private fun setupObservers() {
-        viewModel.searchState.observe(this) { state ->
+        viewModel.searchState.observe(viewLifecycleOwner) { state ->
             when (state) {
                 is SearchState.Loading -> showLoading()
                 is SearchState.Empty -> {
@@ -95,18 +93,13 @@ class SearchActivity : AppCompatActivity() {
             }
         }
 
-        viewModel.historyState.observe(this) { history ->
+        viewModel.historyState.observe(viewLifecycleOwner) { history ->
             if (history.isNotEmpty() && !isSearchPerformed && currentText.isEmpty()) {
                 showHistory(history)
             } else {
                 hideHistory()
             }
         }
-    }
-
-    private fun setupToolbar() {
-        val toolbar = findViewById<MaterialToolbar>(R.id.title)
-        toolbar.setNavigationOnClickListener { finish() }
     }
 
     private fun showHistory(history: List<Track>) {
@@ -124,7 +117,7 @@ class SearchActivity : AppCompatActivity() {
         if (!isClickDebounced) {
             isClickDebounced = true
             viewModel.addTrackToHistory(track)
-            startMediaActivity(track)
+            startMediaFragment(track)
 
             Handler(Looper.getMainLooper()).postDelayed(
                 { isClickDebounced = false },
@@ -133,14 +126,22 @@ class SearchActivity : AppCompatActivity() {
         }
     }
 
+    private fun startMediaFragment(track: Track) {
+        val bundle = Bundle().apply {
+            putParcelable(TRACK_KEY, track)
+        }
+
+        findNavController().navigate(R.id.action_searchFragment_to_mediaFragment, bundle)
+    }
+
     private fun setupViews() {
         adapter = TrackAdapter(emptyList()) { track -> onTrackClick(track) }
         historyAdapter = TrackAdapter(emptyList()) { track -> onTrackClick(track) }
 
-        binding.trackList.layoutManager = LinearLayoutManager(this)
+        binding.trackList.layoutManager = LinearLayoutManager(requireContext())
         binding.trackList.adapter = adapter
 
-        binding.historyRecyclerView.layoutManager = LinearLayoutManager(this)
+        binding.historyRecyclerView.layoutManager = LinearLayoutManager(requireContext())
         binding.historyRecyclerView.adapter = historyAdapter
 
         binding.trackList.visibility = View.GONE
@@ -214,13 +215,6 @@ class SearchActivity : AppCompatActivity() {
         viewModel.searchTracks(query)
     }
 
-    private fun startMediaActivity(track: Track) {
-        val intent = Intent(this, MediaActivity::class.java).apply {
-            putExtra(TRACK_KEY, track)
-        }
-        startActivity(intent)
-    }
-
     private fun showLoading() {
         binding.progressBar.visibility = View.VISIBLE
         binding.trackList.visibility = View.GONE
@@ -259,17 +253,24 @@ class SearchActivity : AppCompatActivity() {
     }
 
     private fun hideKeyboard() {
-        val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        val imm = requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
         imm.hideSoftInputFromWindow(binding.searchEditText.windowToken, 0)
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 
     companion object {
         private const val SEARCH_DEBOUNCE_DELAY = 2000L
         private const val CLICK_DEBOUNCE_DELAY = 500L
-        const val TRACK_KEY = "TRACK"
+        const val TRACK_KEY = "track"
 
         private const val KEY_CURRENT_TEXT = "current_text"
         private const val KEY_LAST_SEARCH_TEXT = "last_search_text"
         private const val KEY_IS_SEARCH_PERFORMED = "is_search_performed"
+
+        fun newInstance() = SearchFragment()
     }
 }

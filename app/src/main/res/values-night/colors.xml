@@ -20,4 +20,7 @@
     <color name="tab_selected_text">#FFFFFF</color>
     <color name="tab_indicator">#FFFFFF</color>
     <color name="tab_background">#1A1B22</color>
+    <color name="bottomNavigation_background">#1A1B22</color>
+    <color name="bottomNavigation_active_text">#3772E7</color>
+    <color name="bottomNavigation_inactive_text">#FFFFFF</color>
 </resources>

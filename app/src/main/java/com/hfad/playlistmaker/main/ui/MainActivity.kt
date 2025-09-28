@@ -1,37 +1,51 @@
 package com.hfad.playlistmaker.main.ui
 
-import android.content.Intent
 import android.os.Bundle
-import android.widget.Button
+import android.view.View
 import androidx.appcompat.app.AppCompatActivity
+import androidx.navigation.fragment.NavHostFragment
+import androidx.navigation.ui.AppBarConfiguration
+import androidx.navigation.ui.setupWithNavController
 import com.hfad.playlistmaker.R
-import com.hfad.playlistmaker.library.ui.LibraryActivity
-import com.hfad.playlistmaker.search.ui.SearchActivity
-import com.hfad.playlistmaker.settings.ui.SettingsActivity
+import com.hfad.playlistmaker.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
+
+    private lateinit var binding: ActivityMainBinding
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
-        val button1 = findViewById<Button>(R.id.button1)
-        button1.setOnClickListener {
-            val intent = Intent(this, SearchActivity::class.java)
-            startActivity(intent)
-        }
-
-        val button2 = findViewById<Button>(R.id.button2)
-        button2.setOnClickListener {
-            val intent = Intent(this, LibraryActivity::class.java)
-            startActivity(intent)
-        }
-
-        val button3 = findViewById<Button>(R.id.button3)
-        button3.setOnClickListener {
-            val intent = Intent(this, SettingsActivity::class.java)
-            startActivity(intent)
-        }
-
+        setupNavigation()
     }
 
+    private fun setupNavigation() {
+        val navHostFragment = supportFragmentManager
+            .findFragmentById(R.id.nav_host_fragment) as NavHostFragment
+        val navController = navHostFragment.navController
+
+        val appBarConfiguration = AppBarConfiguration(
+            setOf(
+                R.id.searchFragment,
+                R.id.libraryFragment,
+                R.id.settingsFragment
+            )
+        )
+
+        binding.bottomNavigation.setupWithNavController(navController)
+
+        navController.addOnDestinationChangedListener { _, destination, _ ->
+            when (destination.id) {
+                R.id.searchFragment, R.id.libraryFragment, R.id.settingsFragment -> {
+                    binding.bottomNavigation.visibility = View.VISIBLE
+                }
+                else -> {
+                    binding.bottomNavigation.visibility = View.GONE
+                }
+            }
+        }
+    }
 }
+
