@@ -34,6 +34,9 @@ class MediaFragment : Fragment(R.layout.fragment_media) {
 
         viewModel.playerState.observe(viewLifecycleOwner) { state ->
             updatePlayButton(state)
+            if (state == PlayerState.PREPARED) {
+                updateProgress(0)
+            }
         }
 
         viewModel.currentPosition.observe(viewLifecycleOwner) { position ->
