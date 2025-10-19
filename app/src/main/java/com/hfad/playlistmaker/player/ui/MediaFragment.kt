@@ -1,6 +1,7 @@
 package com.hfad.playlistmaker.player.ui
 
 import android.os.Bundle
+import androidx.core.view.isVisible
 import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
@@ -95,29 +96,29 @@ class MediaFragment : Fragment(R.layout.fragment_media) {
         track.collectionName?.let {
             binding.collectionNameValue.text = it
         } ?: run {
-            binding.collectionNameLabel.visibility = View.GONE
-            binding.collectionNameValue.visibility = View.GONE
+            binding.collectionNameLabel.isVisible = false
+            binding.collectionNameValue.isVisible = false
         }
 
         track.releaseDate?.let {
             binding.releaseDateValue.text = it.substring(0, 4)
         } ?: run {
-            binding.releaseDateLabel.visibility = View.GONE
-            binding.releaseDateValue.visibility = View.GONE
+            binding.releaseDateLabel.isVisible = false
+            binding.releaseDateValue.isVisible = false
         }
 
         track.primaryGenreName?.let {
             binding.genreNameValue.text = it
         } ?: run {
-            binding.genreNameLabel.visibility = View.GONE
-            binding.genreNameValue.visibility = View.GONE
+            binding.genreNameLabel.isVisible = false
+            binding.genreNameValue.isVisible = false
         }
 
         track.country?.let {
             binding.countryValue.text = it
         } ?: run {
-            binding.countryLabel.visibility = View.GONE
-            binding.countryValue.visibility = View.GONE
+            binding.countryLabel.isVisible = false
+            binding.countryValue.isVisible = false
         }
     }
 

@@ -26,6 +26,12 @@ class MediaViewModel(
     init {
         _playerState.value = playerInteractor.getPlayerState()
         startProgressUpdates()
+
+        playerInteractor.setOnCompletionListener {
+            _playerState.postValue(PlayerState.PREPARED)
+            _currentPosition.postValue(0) // Сбрасываем прогресс на 0
+            stopProgressUpdates()
+        }
     }
 
     fun preparePlayer(previewUrl: String) {
@@ -33,6 +39,13 @@ class MediaViewModel(
         playerInteractor.setOnPreparedListener {
             _playerState.postValue(PlayerState.PREPARED)
         }
+
+        playerInteractor.setOnCompletionListener {
+            _playerState.postValue(PlayerState.PREPARED)
+            _currentPosition.postValue(0) // Сбрасываем прогресс на 0
+            stopProgressUpdates()
+        }
+
         _playerState.value = PlayerState.DEFAULT
     }
 
