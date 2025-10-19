@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
+import androidx.core.view.isVisible
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
@@ -125,24 +126,24 @@ class SearchFragment : Fragment(R.layout.fragment_search) {
     }
 
     private fun hideAllSearchViews() {
-        binding.historyViewGroup.visibility = View.GONE
-        binding.trackList.visibility = View.GONE
-        binding.placeholder.visibility = View.GONE
-        binding.progressBar.visibility = View.GONE
+        binding.historyViewGroup.isVisible = false
+        binding.trackList.isVisible = false
+        binding.placeholder.isVisible = false
+        binding.progressBar.isVisible = false
     }
 
     private fun showHistory(history: List<Track>) {
         hideAllSearchViews()
-        binding.historyViewGroup.visibility = View.VISIBLE
+        binding.historyViewGroup.isVisible = true
         historyAdapter.updateTracks(history)
     }
 
     private fun resetSearchState() {
         isSearchPerformed = false
         lastSearchText = ""
-        binding.trackList.visibility = View.GONE
-        binding.placeholder.visibility = View.GONE
-        binding.progressBar.visibility = View.GONE
+        binding.trackList.isVisible = false
+        binding.placeholder.isVisible = false
+        binding.progressBar.isVisible = false
         viewModel.loadSearchHistory()
     }
 
@@ -181,8 +182,8 @@ class SearchFragment : Fragment(R.layout.fragment_search) {
         binding.historyRecyclerView.layoutManager = LinearLayoutManager(requireContext())
         binding.historyRecyclerView.adapter = historyAdapter
 
-        binding.trackList.visibility = View.GONE
-        binding.historyViewGroup.visibility = View.GONE
+        binding.trackList.isVisible = false
+        binding.historyViewGroup.isVisible = false
 
         binding.clearButton.setOnClickListener {
             binding.searchEditText.text.clear()
@@ -209,7 +210,7 @@ class SearchFragment : Fragment(R.layout.fragment_search) {
     private fun setupListeners() {
         binding.searchEditText.addTextChangedListener { editable ->
             val text = editable?.toString() ?: ""
-            binding.clearButton.visibility = if (text.isEmpty()) View.GONE else View.VISIBLE
+            binding.clearButton.isVisible = if (text.isEmpty()) false else true
 
             if (text.isEmpty()) {
                 resetSearchState()
@@ -217,7 +218,7 @@ class SearchFragment : Fragment(R.layout.fragment_search) {
                 searchJob?.cancel()
                 searchJob = null
             } else {
-                binding.historyViewGroup.visibility = View.GONE
+                binding.historyViewGroup.isVisible = false
                 searchDebounce()
             }
             currentText = text
@@ -260,48 +261,48 @@ class SearchFragment : Fragment(R.layout.fragment_search) {
         isSearchPerformed = true
         hideKeyboard()
 
-        binding.progressBar.visibility = View.VISIBLE
-        binding.trackList.visibility = View.GONE
-        binding.placeholder.visibility = View.GONE
-        binding.historyViewGroup.visibility = View.GONE
+        binding.progressBar.isVisible = true
+        binding.trackList.isVisible = false
+        binding.placeholder.isVisible = false
+        binding.historyViewGroup.isVisible = false
 
         viewModel.searchTracks(query)
     }
 
     private fun showLoading() {
-        binding.progressBar.visibility = View.VISIBLE
-        binding.trackList.visibility = View.GONE
-        binding.placeholder.visibility = View.GONE
+        binding.progressBar.isVisible = true
+        binding.trackList.isVisible = false
+        binding.placeholder.isVisible = false
     }
 
     private fun showEmptyState() {
-        binding.progressBar.visibility = View.GONE
+        binding.progressBar.isVisible = false
         showPlaceholder(true, R.drawable.placeholder_no_results, getString(R.string.nothing_found))
-        binding.updateButton.visibility = View.GONE
+        binding.updateButton.isVisible = false
     }
 
     private fun showErrorState(message: String) {
-        binding.progressBar.visibility = View.GONE
+        binding.progressBar.isVisible = false
         showPlaceholder(true, R.drawable.placeholder_error, getString(R.string.server_error))
-        binding.updateButton.visibility = View.VISIBLE
+        binding.updateButton.isVisible = true
     }
 
     private fun showSearchResults(tracks: List<Track>) {
-        binding.progressBar.visibility = View.GONE
+        binding.progressBar.isVisible = false
         hideAllSearchViews()
         adapter.updateTracks(tracks)
-        binding.trackList.visibility = View.VISIBLE
+        binding.trackList.isVisible = true
     }
 
     private fun showPlaceholder(show: Boolean, iconRes: Int = 0, text: String = "") {
         if (show) {
-            binding.trackList.visibility = View.GONE
-            binding.placeholder.visibility = View.VISIBLE
+            binding.trackList.isVisible = false
+            binding.placeholder.isVisible = true
             if (iconRes != 0) binding.placeholderIcon.setImageResource(iconRes)
             if (text.isNotEmpty()) binding.placeholderText.text = text
         } else {
-            binding.trackList.visibility = View.VISIBLE
-            binding.placeholder.visibility = View.GONE
+            binding.trackList.isVisible = true
+            binding.placeholder.isVisible = false
         }
     }
 
