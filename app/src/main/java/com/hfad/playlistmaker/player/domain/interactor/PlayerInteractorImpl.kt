@@ -34,4 +34,8 @@ class PlayerInteractorImpl(
     override fun setOnPreparedListener(listener: () -> Unit) {
         playerRepository.setOnPreparedListener(listener)
     }
+
+    override fun setOnCompletionListener(listener: () -> Unit) {
+        playerRepository.setOnCompletionListener(listener)
+    }
 }

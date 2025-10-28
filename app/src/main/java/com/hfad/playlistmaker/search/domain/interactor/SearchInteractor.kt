@@ -2,29 +2,16 @@ package com.hfad.playlistmaker.search.domain.interactor
 
 import com.hfad.playlistmaker.search.domain.models.Track
 import com.hfad.playlistmaker.search.domain.repository.SearchRepository
-import java.util.concurrent.Executors
+import kotlinx.coroutines.flow.Flow
 
 interface SearchInteractor {
-    fun searchTracks(query: String, consumer: SearchConsumer)
-
-    interface SearchConsumer {
-        fun consume(foundTracks: List<Track>, error: String?)
-    }
+    fun searchTracks(query: String): Flow<List<Track>>
 }
 
 class SearchInteractorImpl(
     private val repository: SearchRepository
 ) : SearchInteractor {
-    private val executor = Executors.newCachedThreadPool()
-
-    override fun searchTracks(query: String, consumer: SearchInteractor.SearchConsumer) {
-        executor.execute {
-            try {
-                val tracks = repository.searchTracks(query)
-                consumer.consume(tracks, null)
-            } catch (e: Exception) {
-                consumer.consume(emptyList(), e.message)
-            }
-        }
+    override fun searchTracks(query: String): Flow<List<Track>> {
+        return repository.searchTracks(query)
     }
 }

@@ -9,6 +9,8 @@ import com.hfad.playlistmaker.search.domain.interactor.SearchInteractor
 import com.hfad.playlistmaker.search.domain.models.Track
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
 
 class SearchViewModel(
@@ -46,20 +48,22 @@ class SearchViewModel(
     fun searchTracks(query: String) {
         searchJob?.cancel()
         searchJob = viewModelScope.launch {
-            _searchState.value = SearchState.Loading
             delay(SEARCH_DEBOUNCE_DELAY)
 
-            searchInteractor.searchTracks(query, object : SearchInteractor.SearchConsumer {
-                override fun consume(foundTracks: List<Track>, error: String?) {
-                    if (error != null) {
-                        _searchState.postValue(SearchState.Error(error))
-                    } else if (foundTracks.isEmpty()) {
-                        _searchState.postValue(SearchState.Empty)
+            searchInteractor.searchTracks(query)
+                .onStart {
+                    _searchState.value = SearchState.Loading
+                }
+                .catch { error ->
+                    _searchState.value = SearchState.Error(error.message ?: "Unknown error")
+                }
+                .collect { tracks ->
+                    if (tracks.isEmpty()) {
+                        _searchState.value = SearchState.Empty
                     } else {
-                        _searchState.postValue(SearchState.Content(foundTracks))
+                        _searchState.value = SearchState.Content(tracks)
                     }
                 }
-            })
         }
     }
 

@@ -10,4 +10,5 @@ interface PlayerRepository {
     fun getCurrentPosition(): Int
     fun getPlayerState(): PlayerState
     fun setOnPreparedListener(listener: () -> Unit)
+    fun setOnCompletionListener(listener: () -> Unit)
 }

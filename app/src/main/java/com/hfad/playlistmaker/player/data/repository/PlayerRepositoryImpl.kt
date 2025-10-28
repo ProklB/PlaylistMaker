@@ -11,6 +11,7 @@ class PlayerRepositoryImpl(
 
     private var playerState: PlayerState = PlayerState.DEFAULT
     private var onPreparedListener: (() -> Unit)? = null
+    private var onCompletionListener: (() -> Unit)? = null
 
     override fun preparePlayer(previewUrl: String) {
         mediaPlayer.apply {
@@ -24,11 +25,16 @@ class PlayerRepositoryImpl(
                 }
                 setOnCompletionListener {
                     playerState = PlayerState.PREPARED
+                    onCompletionListener?.invoke()
                 }
             } catch (e: IOException) {
                 playerState = PlayerState.DEFAULT
             }
         }
+    }
+
+    override fun setOnCompletionListener(listener: () -> Unit) {
+        onCompletionListener = listener
     }
 
     override fun setOnPreparedListener(listener: () -> Unit) {

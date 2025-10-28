@@ -2,11 +2,10 @@ package com.hfad.playlistmaker.search.ui
 
 import android.content.Context
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
+import androidx.core.view.isVisible
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
@@ -17,6 +16,10 @@ import com.hfad.playlistmaker.search.domain.models.Track
 import com.hfad.playlistmaker.search.ui.adapter.TrackAdapter
 import com.hfad.playlistmaker.search.ui.viewmodel.SearchState
 import com.hfad.playlistmaker.search.ui.viewmodel.SearchViewModel
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class SearchFragment : Fragment(R.layout.fragment_search) {
@@ -31,11 +34,11 @@ class SearchFragment : Fragment(R.layout.fragment_search) {
 
     private var currentText = ""
     private var lastSearchText = ""
-    private var isClickDebounced = false
     private var isSearchPerformed = false
 
-    private val handler = Handler(Looper.getMainLooper())
-    private val searchRunnable = Runnable { startSearch() }
+    private val scope = MainScope()
+    private var searchJob: Job? = null
+    private val clickDebounceMap = mutableMapOf<Int, Job>()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -53,8 +56,14 @@ class SearchFragment : Fragment(R.layout.fragment_search) {
         setupObservers()
         setupListeners()
 
-        if (isSearchPerformed && lastSearchText.isNotEmpty()) {
+        if (currentText.isEmpty()) {
+            resetSearchState()
+            showHistoryIfAvailable()
+        } else if (isSearchPerformed && lastSearchText.isNotEmpty()) {
             startSearch(lastSearchText)
+        } else {
+            resetSearchState()
+            showHistoryIfAvailable()
         }
     }
 
@@ -72,6 +81,9 @@ class SearchFragment : Fragment(R.layout.fragment_search) {
         outState.putString(KEY_CURRENT_TEXT, currentText)
         outState.putString(KEY_LAST_SEARCH_TEXT, lastSearchText)
         outState.putBoolean(KEY_IS_SEARCH_PERFORMED, isSearchPerformed)
+        if (currentText.isEmpty()) {
+            outState.putBoolean(KEY_IS_SEARCH_PERFORMED, false)
+        }
     }
 
     private fun setupObservers() {
@@ -94,43 +106,69 @@ class SearchFragment : Fragment(R.layout.fragment_search) {
         }
 
         viewModel.historyState.observe(viewLifecycleOwner) { history ->
-            if (history.isNotEmpty() && !isSearchPerformed && currentText.isEmpty()) {
-                showHistory(history)
-            } else {
-                hideHistory()
+            if (!isSearchPerformed && currentText.isEmpty()) {
+                if (history.isNotEmpty()) {
+                    showHistory(history)
+                } else {
+                    hideAllSearchViews()
+                }
             }
         }
     }
 
+    private fun showHistoryIfAvailable() {
+        val history = viewModel.historyState.value ?: emptyList()
+        if (history.isNotEmpty()) {
+            showHistory(history)
+        } else {
+            hideAllSearchViews()
+        }
+    }
+
+    private fun hideAllSearchViews() {
+        binding.historyViewGroup.isVisible = false
+        binding.trackList.isVisible = false
+        binding.placeholder.isVisible = false
+        binding.progressBar.isVisible = false
+    }
+
     private fun showHistory(history: List<Track>) {
-        binding.historyViewGroup.visibility = View.VISIBLE
-        binding.trackList.visibility = View.GONE
-        binding.placeholder.visibility = View.GONE
+        hideAllSearchViews()
+        binding.historyViewGroup.isVisible = true
         historyAdapter.updateTracks(history)
     }
 
-    private fun hideHistory() {
-        binding.historyViewGroup.visibility = View.GONE
+    private fun resetSearchState() {
+        isSearchPerformed = false
+        lastSearchText = ""
+        binding.trackList.isVisible = false
+        binding.placeholder.isVisible = false
+        binding.progressBar.isVisible = false
+        viewModel.loadSearchHistory()
     }
 
     private fun onTrackClick(track: Track) {
-        if (!isClickDebounced) {
-            isClickDebounced = true
-            viewModel.addTrackToHistory(track)
-            startMediaFragment(track)
+        val trackId = track.trackId
 
-            Handler(Looper.getMainLooper()).postDelayed(
-                { isClickDebounced = false },
-                CLICK_DEBOUNCE_DELAY
-            )
+        if (clickDebounceMap[trackId]?.isActive == true) {
+            return
         }
+
+        viewModel.addTrackToHistory(track)
+        startMediaFragment(track)
+
+        val debounceJob = scope.launch {
+            delay(CLICK_DEBOUNCE_DELAY)
+            clickDebounceMap.remove(trackId)
+        }
+
+        clickDebounceMap[trackId] = debounceJob
     }
 
     private fun startMediaFragment(track: Track) {
         val bundle = Bundle().apply {
             putParcelable(TRACK_KEY, track)
         }
-
         findNavController().navigate(R.id.action_searchFragment_to_mediaFragment, bundle)
     }
 
@@ -144,15 +182,16 @@ class SearchFragment : Fragment(R.layout.fragment_search) {
         binding.historyRecyclerView.layoutManager = LinearLayoutManager(requireContext())
         binding.historyRecyclerView.adapter = historyAdapter
 
-        binding.trackList.visibility = View.GONE
-        binding.historyViewGroup.visibility = View.GONE
+        binding.trackList.isVisible = false
+        binding.historyViewGroup.isVisible = false
 
         binding.clearButton.setOnClickListener {
             binding.searchEditText.text.clear()
             hideKeyboard()
-            showPlaceholder(false)
-            isSearchPerformed = false
-            viewModel.loadSearchHistory()
+            resetSearchState()
+            showHistoryIfAvailable()
+            searchJob?.cancel()
+            searchJob = null
         }
 
         binding.clearHistoryButton.setOnClickListener {
@@ -160,16 +199,26 @@ class SearchFragment : Fragment(R.layout.fragment_search) {
         }
     }
 
+    override fun onResume() {
+        super.onResume()
+        if (currentText.isEmpty()) {
+            resetSearchState()
+            showHistoryIfAvailable()
+        }
+    }
+
     private fun setupListeners() {
         binding.searchEditText.addTextChangedListener { editable ->
             val text = editable?.toString() ?: ""
-            binding.clearButton.visibility = if (text.isEmpty()) View.GONE else View.VISIBLE
+            binding.clearButton.isVisible = if (text.isEmpty()) false else true
 
             if (text.isEmpty()) {
-                isSearchPerformed = false
-                viewModel.loadSearchHistory()
+                resetSearchState()
+                showHistoryIfAvailable()
+                searchJob?.cancel()
+                searchJob = null
             } else {
-                binding.historyViewGroup.visibility = View.GONE
+                binding.historyViewGroup.isVisible = false
                 searchDebounce()
             }
             currentText = text
@@ -177,6 +226,8 @@ class SearchFragment : Fragment(R.layout.fragment_search) {
 
         binding.searchEditText.setOnEditorActionListener { _, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_DONE) {
+                searchJob?.cancel()
+                searchJob = null
                 startSearch()
                 true
             } else {
@@ -192,8 +243,11 @@ class SearchFragment : Fragment(R.layout.fragment_search) {
     }
 
     private fun searchDebounce() {
-        handler.removeCallbacks(searchRunnable)
-        handler.postDelayed(searchRunnable, SEARCH_DEBOUNCE_DELAY)
+        searchJob?.cancel()
+        searchJob = scope.launch {
+            delay(SEARCH_DEBOUNCE_DELAY)
+            startSearch()
+        }
     }
 
     private fun startSearch(query: String = binding.searchEditText.text.toString()) {
@@ -207,48 +261,48 @@ class SearchFragment : Fragment(R.layout.fragment_search) {
         isSearchPerformed = true
         hideKeyboard()
 
-        binding.progressBar.visibility = View.VISIBLE
-        binding.trackList.visibility = View.GONE
-        binding.placeholder.visibility = View.GONE
-        binding.historyViewGroup.visibility = View.GONE
+        binding.progressBar.isVisible = true
+        binding.trackList.isVisible = false
+        binding.placeholder.isVisible = false
+        binding.historyViewGroup.isVisible = false
 
         viewModel.searchTracks(query)
     }
 
     private fun showLoading() {
-        binding.progressBar.visibility = View.VISIBLE
-        binding.trackList.visibility = View.GONE
-        binding.placeholder.visibility = View.GONE
+        binding.progressBar.isVisible = true
+        binding.trackList.isVisible = false
+        binding.placeholder.isVisible = false
     }
 
     private fun showEmptyState() {
-        binding.progressBar.visibility = View.GONE
+        binding.progressBar.isVisible = false
         showPlaceholder(true, R.drawable.placeholder_no_results, getString(R.string.nothing_found))
-        binding.updateButton.visibility = View.GONE
+        binding.updateButton.isVisible = false
     }
 
     private fun showErrorState(message: String) {
-        binding.progressBar.visibility = View.GONE
+        binding.progressBar.isVisible = false
         showPlaceholder(true, R.drawable.placeholder_error, getString(R.string.server_error))
-        binding.updateButton.visibility = View.VISIBLE
+        binding.updateButton.isVisible = true
     }
 
     private fun showSearchResults(tracks: List<Track>) {
-        binding.progressBar.visibility = View.GONE
-        showPlaceholder(false)
+        binding.progressBar.isVisible = false
+        hideAllSearchViews()
         adapter.updateTracks(tracks)
-        binding.trackList.visibility = View.VISIBLE
+        binding.trackList.isVisible = true
     }
 
     private fun showPlaceholder(show: Boolean, iconRes: Int = 0, text: String = "") {
         if (show) {
-            binding.trackList.visibility = View.GONE
-            binding.placeholder.visibility = View.VISIBLE
+            binding.trackList.isVisible = false
+            binding.placeholder.isVisible = true
             if (iconRes != 0) binding.placeholderIcon.setImageResource(iconRes)
             if (text.isNotEmpty()) binding.placeholderText.text = text
         } else {
-            binding.trackList.visibility = View.VISIBLE
-            binding.placeholder.visibility = View.GONE
+            binding.trackList.isVisible = true
+            binding.placeholder.isVisible = false
         }
     }
 
@@ -259,7 +313,20 @@ class SearchFragment : Fragment(R.layout.fragment_search) {
 
     override fun onDestroyView() {
         super.onDestroyView()
+        cleanupCoroutines()
         _binding = null
+    }
+
+    override fun onPause() {
+        super.onPause()
+        cleanupCoroutines()
+    }
+
+    private fun cleanupCoroutines() {
+        searchJob?.cancel()
+        searchJob = null
+        clickDebounceMap.values.forEach { it.cancel() }
+        clickDebounceMap.clear()
     }
 
     companion object {
