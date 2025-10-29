@@ -11,7 +11,7 @@ class SearchHistoryInteractorImpl(
         repository.addTrackToHistory(track)
     }
 
-    override fun getSearchHistory(): List<Track> {
+    override suspend fun getSearchHistory(): List<Track> {
         return repository.getSearchHistory()
     }
 

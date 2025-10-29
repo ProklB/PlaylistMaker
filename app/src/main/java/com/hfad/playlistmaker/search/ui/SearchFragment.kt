@@ -116,14 +116,9 @@ class SearchFragment : Fragment(R.layout.fragment_search) {
         }
     }
 
-    private fun showHistoryIfAvailable() {
-        val history = viewModel.historyState.value ?: emptyList()
-        if (history.isNotEmpty()) {
-            showHistory(history)
-        } else {
-            hideAllSearchViews()
-        }
-    }
+private fun showHistoryIfAvailable() {
+    viewModel.loadSearchHistory()
+}
 
     private fun hideAllSearchViews() {
         binding.historyViewGroup.isVisible = false

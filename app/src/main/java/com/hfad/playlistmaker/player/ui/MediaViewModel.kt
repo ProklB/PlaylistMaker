@@ -4,15 +4,18 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.hfad.playlistmaker.library.domain.interactor.FavoriteTracksInteractor
 import com.hfad.playlistmaker.player.domain.interactor.PlayerInteractor
 import com.hfad.playlistmaker.player.domain.models.PlayerState
+import com.hfad.playlistmaker.search.domain.models.Track
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 
 class MediaViewModel(
-    private val playerInteractor: PlayerInteractor
+    private val playerInteractor: PlayerInteractor,
+    private val favoriteTracksInteractor: FavoriteTracksInteractor
 ) : ViewModel() {
 
     private val _playerState = MutableLiveData<PlayerState>()
@@ -21,6 +24,10 @@ class MediaViewModel(
     private val _currentPosition = MutableLiveData<Int>()
     val currentPosition: LiveData<Int> = _currentPosition
 
+    private val _isFavorite = MutableLiveData<Boolean>()
+    val isFavorite: LiveData<Boolean> = _isFavorite
+
+    private var currentTrack: Track? = null
     private var progressUpdateJob: Job? = null
 
     init {
@@ -29,9 +36,14 @@ class MediaViewModel(
 
         playerInteractor.setOnCompletionListener {
             _playerState.postValue(PlayerState.PREPARED)
-            _currentPosition.postValue(0) // Сбрасываем прогресс на 0
+            _currentPosition.postValue(0)
             stopProgressUpdates()
         }
+    }
+
+    fun setTrack(track: Track) {
+        currentTrack = track
+        _isFavorite.value = track.isFavorite
     }
 
     fun preparePlayer(previewUrl: String) {
@@ -42,7 +54,7 @@ class MediaViewModel(
 
         playerInteractor.setOnCompletionListener {
             _playerState.postValue(PlayerState.PREPARED)
-            _currentPosition.postValue(0) // Сбрасываем прогресс на 0
+            _currentPosition.postValue(0)
             stopProgressUpdates()
         }
 
@@ -62,6 +74,19 @@ class MediaViewModel(
                 startProgressUpdates()
             }
             else -> {}
+        }
+    }
+
+    fun onFavoriteClicked() {
+        val track = currentTrack ?: return
+        viewModelScope.launch {
+            if (track.isFavorite) {
+                favoriteTracksInteractor.removeTrackFromFavorites(track)
+            } else {
+                favoriteTracksInteractor.addTrackToFavorites(track)
+            }
+            track.isFavorite = !track.isFavorite
+            _isFavorite.postValue(track.isFavorite)
         }
     }
 

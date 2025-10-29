@@ -4,6 +4,9 @@ import android.content.Context
 import android.content.SharedPreferences
 import android.media.MediaPlayer
 import com.google.gson.Gson
+import com.hfad.playlistmaker.data.db.AppDatabase
+import com.hfad.playlistmaker.library.data.repository.FavoriteTracksRepositoryImpl
+import com.hfad.playlistmaker.library.domain.repository.FavoriteTracksRepository
 import com.hfad.playlistmaker.player.data.repository.PlayerRepositoryImpl
 import com.hfad.playlistmaker.player.domain.repository.PlayerRepository
 import com.hfad.playlistmaker.search.data.network.ItunesApi
@@ -44,11 +47,11 @@ val dataModule = module {
     }
 
     factory<SearchRepository> {
-        SearchRepositoryImpl(get())
+        SearchRepositoryImpl(get(), get())
     }
 
     factory<SearchHistoryRepository> {
-        SearchHistoryRepositoryImpl(get(), get())
+        SearchHistoryRepositoryImpl(get(), get(), get())
     }
 
     single<SettingsRepository> {
@@ -59,5 +62,17 @@ val dataModule = module {
 
     factory<PlayerRepository> {
         PlayerRepositoryImpl(get())
+    }
+
+    single<AppDatabase> {
+        AppDatabase.getInstance(androidContext())
+    }
+
+    single {
+        get<AppDatabase>().favoriteTracksDao()
+    }
+
+    factory<FavoriteTracksRepository> {
+        FavoriteTracksRepositoryImpl(get())
     }
 }

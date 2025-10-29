@@ -15,7 +15,7 @@ val viewModelModule = module {
     }
 
     viewModel {
-        MediaViewModel(get())
+        MediaViewModel(get(), get())
     }
 
     viewModel {
@@ -25,6 +25,6 @@ val viewModelModule = module {
         PlaylistsViewModel()
     }
     viewModel {
-        FavoritesViewModel()
+        FavoritesViewModel(get())
     }
 }
