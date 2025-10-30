@@ -41,8 +41,10 @@ class SearchViewModel(
     }
 
     fun loadSearchHistory() {
-        val history = searchHistoryInteractor.getSearchHistory()
-        _historyState.value = history
+        viewModelScope.launch {
+            val history = searchHistoryInteractor.getSearchHistory()
+            _historyState.postValue(history)
+        }
     }
 
     fun searchTracks(query: String) {

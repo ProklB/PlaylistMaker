@@ -33,6 +33,8 @@ class MediaFragment : Fragment(R.layout.fragment_media) {
             return
         }
 
+        viewModel.setTrack(track)
+
         viewModel.playerState.observe(viewLifecycleOwner) { state ->
             updatePlayButton(state)
             if (state == PlayerState.PREPARED) {
@@ -44,10 +46,18 @@ class MediaFragment : Fragment(R.layout.fragment_media) {
             updateProgress(position)
         }
 
+        viewModel.isFavorite.observe(viewLifecycleOwner) { isFavorite ->
+            updateFavoriteButton(isFavorite)
+        }
+
         viewModel.preparePlayer(track.previewUrl)
 
         binding.playButton.setOnClickListener {
             viewModel.playPause()
+        }
+
+        binding.addToFavoritesButton.setOnClickListener {
+            viewModel.onFavoriteClicked()
         }
 
         displayTrackInfo(track)
@@ -66,6 +76,13 @@ class MediaFragment : Fragment(R.layout.fragment_media) {
         binding.playButton.setImageResource(
             if (state == PlayerState.PLAYING) R.drawable.button_pause
             else R.drawable.button_play
+        )
+    }
+
+    private fun updateFavoriteButton(isFavorite: Boolean) {
+        binding.addToFavoritesButton.setImageResource(
+            if (isFavorite) R.drawable.button_like_rad
+            else R.drawable.button_like_gray
         )
     }
 
@@ -135,7 +152,7 @@ class MediaFragment : Fragment(R.layout.fragment_media) {
     }
 
     companion object {
-        const val TRACK_KEY = "track"  // Должен совпадать с ключом в SearchFragment
+        const val TRACK_KEY = "track"
 
         fun newInstance(track: Track): MediaFragment {
             return MediaFragment().apply {
