@@ -48,11 +48,11 @@ class PlaylistBottomSheetAdapter(
             playlist.coverPath?.let { coverPath ->
                 Glide.with(itemView)
                     .load(coverPath)
-                    .placeholder(R.drawable.placeholder_newlist)
+                    .placeholder(R.drawable.playsholder_play_light)
                     .centerCrop()
                     .into(binding.playlistCover)
             } ?: run {
-                binding.playlistCover.setImageResource(R.drawable.placeholder_newlist)
+                binding.playlistCover.setImageResource(R.drawable.playsholder_play_light)
             }
 
             itemView.setOnClickListener {
