@@ -26,6 +26,9 @@
         <action
             android:id="@+id/action_libraryFragment_to_mediaFragment"
             app:destination="@id/mediaFragment" />
+        <action
+            android:id="@+id/action_libraryFragment_to_createPlaylistFragment"
+            app:destination="@id/createPlaylistFragment" />
 
     </fragment>
 
@@ -39,6 +42,18 @@
         android:id="@+id/mediaFragment"
         android:name="com.hfad.playlistmaker.player.ui.MediaFragment"
         android:label="Media Player"
-        tools:layout="@layout/fragment_media" />
+        tools:layout="@layout/fragment_media">
+
+        <action
+            android:id="@+id/action_mediaFragment_to_createPlaylistFragment"
+            app:destination="@id/createPlaylistFragment" />
+
+    </fragment>
+
+    <fragment
+        android:id="@+id/createPlaylistFragment"
+        android:name="com.hfad.playlistmaker.playlist.ui.create.CreatePlaylistFragment"
+        android:label="Новый плейлист"
+        tools:layout="@layout/fragment_create_playlist" />
 
 </navigation>

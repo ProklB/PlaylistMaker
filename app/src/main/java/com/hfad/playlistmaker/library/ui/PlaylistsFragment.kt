@@ -3,8 +3,12 @@ package com.hfad.playlistmaker.library.ui
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.GridLayoutManager
 import com.hfad.playlistmaker.R
 import com.hfad.playlistmaker.databinding.FragmentPlaylistsBinding
+import com.hfad.playlistmaker.library.ui.adapter.PlaylistAdapter
+import com.hfad.playlistmaker.library.ui.viewmodel.PlaylistsState
 import com.hfad.playlistmaker.library.ui.viewmodel.PlaylistsViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -14,22 +18,59 @@ class PlaylistsFragment : Fragment(R.layout.fragment_playlists) {
     private val binding get() = _binding!!
     private val viewModel: PlaylistsViewModel by viewModel()
 
+    private lateinit var adapter: PlaylistAdapter
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         _binding = FragmentPlaylistsBinding.bind(view)
 
+        setupRecyclerView()
         setupViews()
         observeViewModel()
     }
 
+    private fun setupRecyclerView() {
+        adapter = PlaylistAdapter(emptyList()) { playlist ->
+            onPlaylistClick(playlist)
+        }
+
+        binding.playlistsRecyclerView.layoutManager = GridLayoutManager(requireContext(), 2)
+        binding.playlistsRecyclerView.adapter = adapter
+    }
+
     private fun setupViews() {
         binding.buttonCreatePlaylist.setOnClickListener {
-            // Обработка нажатия на кнопку
+            findNavController().navigate(R.id.action_libraryFragment_to_createPlaylistFragment)
         }
     }
 
     private fun observeViewModel() {
-        // дальше думать надо, пока заготовка
+        viewModel.playlistsState.observe(viewLifecycleOwner) { state ->
+            when (state) {
+                is PlaylistsState.Empty -> showEmptyState()
+                is PlaylistsState.Content -> showPlaylists(state.playlists)
+            }
+        }
+    }
+
+    private fun showEmptyState() {
+        binding.emptyStateView.visibility = View.VISIBLE
+        binding.playlistsRecyclerView.visibility = View.GONE
+    }
+
+    private fun showPlaylists(playlists: List<com.hfad.playlistmaker.playlist.domain.models.Playlist>) {
+        binding.emptyStateView.visibility = View.GONE
+        binding.playlistsRecyclerView.visibility = View.VISIBLE
+        adapter.updatePlaylists(playlists)
+    }
+
+    private fun onPlaylistClick(playlist: com.hfad.playlistmaker.playlist.domain.models.Playlist) {
+        // TODO: Реализовать переход к деталям плейлиста
+    }
+
+    override fun onResume() {
+        super.onResume()
+        viewModel.loadPlaylists()
     }
 
     override fun onDestroyView() {
