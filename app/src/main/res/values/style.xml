@@ -141,6 +141,9 @@
         <item name="android:textColor">@color/text_textview</item>
     </style>
 
-
+    <style name="RoundedCorners" parent="">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">8dp</item>
+    </style>
 
 </resources>

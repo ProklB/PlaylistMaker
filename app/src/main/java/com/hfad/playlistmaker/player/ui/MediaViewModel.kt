@@ -7,6 +7,8 @@ import androidx.lifecycle.viewModelScope
 import com.hfad.playlistmaker.library.domain.interactor.FavoriteTracksInteractor
 import com.hfad.playlistmaker.player.domain.interactor.PlayerInteractor
 import com.hfad.playlistmaker.player.domain.models.PlayerState
+import com.hfad.playlistmaker.player.ui.model.AddToPlaylistStatus
+import com.hfad.playlistmaker.player.ui.model.PlayerScreenState
 import com.hfad.playlistmaker.playlist.domain.interactor.PlaylistInteractor
 import com.hfad.playlistmaker.playlist.domain.models.Playlist
 import com.hfad.playlistmaker.search.domain.models.Track
@@ -23,14 +25,9 @@ class MediaViewModel(
 
     private val _addToPlaylistStatus = MutableLiveData<AddToPlaylistStatus>()
     val addToPlaylistStatus: LiveData<AddToPlaylistStatus> = _addToPlaylistStatus
-    private val _playerState = MutableLiveData<PlayerState>()
-    val playerState: LiveData<PlayerState> = _playerState
 
-    private val _currentPosition = MutableLiveData<Int>()
-    val currentPosition: LiveData<Int> = _currentPosition
-
-    private val _isFavorite = MutableLiveData<Boolean>()
-    val isFavorite: LiveData<Boolean> = _isFavorite
+    private val _playerScreenState = MutableLiveData<PlayerScreenState>()
+    val playerScreenState: LiveData<PlayerScreenState> = _playerScreenState
 
     private val _playlists = MutableLiveData<List<Playlist>>()
     val playlists: LiveData<List<Playlist>> = _playlists
@@ -39,19 +36,29 @@ class MediaViewModel(
     private var progressUpdateJob: Job? = null
 
     init {
-        _playerState.value = playerInteractor.getPlayerState()
+        _playerScreenState.value = PlayerScreenState(
+            playerState = playerInteractor.getPlayerState(),
+            currentPosition = 0,
+            isFavorite = false
+        )
         startProgressUpdates()
 
         playerInteractor.setOnCompletionListener {
-            _playerState.postValue(PlayerState.PREPARED)
-            _currentPosition.postValue(0)
+            updatePlayerScreenState { currentState ->
+                currentState.copy(
+                    playerState = PlayerState.PREPARED,
+                    currentPosition = 0
+                )
+            }
             stopProgressUpdates()
         }
     }
 
     fun setTrack(track: Track) {
         currentTrack = track
-        _isFavorite.value = track.isFavorite
+        updatePlayerScreenState { currentState ->
+            currentState.copy(isFavorite = track.isFavorite)
+        }
     }
 
     fun loadPlaylists() {
@@ -65,28 +72,40 @@ class MediaViewModel(
     fun preparePlayer(previewUrl: String) {
         playerInteractor.preparePlayer(previewUrl)
         playerInteractor.setOnPreparedListener {
-            _playerState.postValue(PlayerState.PREPARED)
+            updatePlayerScreenState { currentState ->
+                currentState.copy(playerState = PlayerState.PREPARED)
+            }
         }
 
         playerInteractor.setOnCompletionListener {
-            _playerState.postValue(PlayerState.PREPARED)
-            _currentPosition.postValue(0)
+            updatePlayerScreenState { currentState ->
+                currentState.copy(
+                    playerState = PlayerState.PREPARED,
+                    currentPosition = 0
+                )
+            }
             stopProgressUpdates()
         }
 
-        _playerState.value = PlayerState.DEFAULT
+        updatePlayerScreenState { currentState ->
+            currentState.copy(playerState = PlayerState.DEFAULT)
+        }
     }
 
     fun playPause() {
         when (playerInteractor.getPlayerState()) {
             PlayerState.PLAYING -> {
                 playerInteractor.pausePlayer()
-                _playerState.value = PlayerState.PAUSED
+                updatePlayerScreenState { currentState ->
+                    currentState.copy(playerState = PlayerState.PAUSED)
+                }
                 stopProgressUpdates()
             }
             PlayerState.PREPARED, PlayerState.PAUSED -> {
                 playerInteractor.startPlayer()
-                _playerState.value = PlayerState.PLAYING
+                updatePlayerScreenState { currentState ->
+                    currentState.copy(playerState = PlayerState.PLAYING)
+                }
                 startProgressUpdates()
             }
             else -> {}
@@ -102,7 +121,9 @@ class MediaViewModel(
                 favoriteTracksInteractor.addTrackToFavorites(track)
             }
             track.isFavorite = !track.isFavorite
-            _isFavorite.postValue(track.isFavorite)
+            updatePlayerScreenState { currentState ->
+                currentState.copy(isFavorite = track.isFavorite)
+            }
         }
     }
 
@@ -111,7 +132,9 @@ class MediaViewModel(
         progressUpdateJob = viewModelScope.launch {
             while (isActive) {
                 if (playerInteractor.getPlayerState() == PlayerState.PLAYING) {
-                    _currentPosition.postValue(playerInteractor.getCurrentPosition())
+                    updatePlayerScreenState { currentState ->
+                        currentState.copy(currentPosition = playerInteractor.getCurrentPosition())
+                    }
                 }
                 delay(PROGRESS_UPDATE_DELAY)
             }
@@ -123,6 +146,11 @@ class MediaViewModel(
         progressUpdateJob = null
     }
 
+    private fun updatePlayerScreenState(update: (PlayerScreenState) -> PlayerScreenState) {
+        val currentState = _playerScreenState.value ?: PlayerScreenState()
+        _playerScreenState.postValue(update(currentState))
+    }
+
     override fun onCleared() {
         super.onCleared()
         stopProgressUpdates()
@@ -132,16 +160,15 @@ class MediaViewModel(
     fun addTrackToPlaylist(track: Track, playlist: Playlist) {
         viewModelScope.launch {
             try {
-                val isTrackInPlaylist = playlistInteractor.isTrackInPlaylist(track.trackId, playlist)
+                val isAdded = playlistInteractor.addTrackToPlaylist(track, playlist)
 
-                if (isTrackInPlaylist) {
-                    _addToPlaylistStatus.postValue(
-                        AddToPlaylistStatus.TrackAlreadyExists(playlist.name)
-                    )
-                } else {
-                    playlistInteractor.addTrackToPlaylist(track, playlist)
+                if (isAdded) {
                     _addToPlaylistStatus.postValue(
                         AddToPlaylistStatus.Success(playlist.name)
+                    )
+                } else {
+                    _addToPlaylistStatus.postValue(
+                        AddToPlaylistStatus.TrackAlreadyExists(playlist.name)
                     )
                 }
             } catch (e: Exception) {
@@ -153,10 +180,4 @@ class MediaViewModel(
     companion object {
         private const val PROGRESS_UPDATE_DELAY = 300L
     }
-}
-
-sealed class AddToPlaylistStatus {
-    data class Success(val playlistName: String) : AddToPlaylistStatus()
-    data class TrackAlreadyExists(val playlistName: String) : AddToPlaylistStatus()
-    object Error : AddToPlaylistStatus()
 }

@@ -17,11 +17,15 @@ class PlaylistInteractorImpl(
         return repository.getAllPlaylists()
     }
 
-    override suspend fun addTrackToPlaylist(track: Track, playlist: Playlist) {
-        repository.addTrackToPlaylist(track, playlist)
+    override suspend fun addTrackToPlaylist(track: Track, playlist: Playlist): Boolean {
+        return repository.addTrackToPlaylist(track, playlist)
     }
 
     override suspend fun isTrackInPlaylist(trackId: Int, playlist: Playlist): Boolean {
         return repository.isTrackInPlaylist(trackId, playlist)
+    }
+
+    override suspend fun getPlaylistTracks(playlist: Playlist): List<Track> {
+        return repository.getPlaylistTracks(playlist)
     }
 }

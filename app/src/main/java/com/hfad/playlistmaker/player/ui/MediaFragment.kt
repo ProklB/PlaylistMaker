@@ -23,6 +23,7 @@ import java.text.SimpleDateFormat
 import java.util.Locale
 import android.widget.TextView
 import android.view.Gravity
+import com.hfad.playlistmaker.player.ui.model.AddToPlaylistStatus
 
 class MediaFragment : Fragment(R.layout.fragment_media) {
 
@@ -48,19 +49,13 @@ class MediaFragment : Fragment(R.layout.fragment_media) {
 
         initBottomSheet()
 
-        viewModel.playerState.observe(viewLifecycleOwner) { state ->
-            updatePlayButton(state)
-            if (state == PlayerState.PREPARED) {
+        viewModel.playerScreenState.observe(viewLifecycleOwner) { state ->
+            updatePlayButton(state.playerState)
+            updateFavoriteButton(state.isFavorite)
+            if (state.playerState == PlayerState.PREPARED) {
                 updateProgress(0)
             }
-        }
-
-        viewModel.currentPosition.observe(viewLifecycleOwner) { position ->
-            updateProgress(position)
-        }
-
-        viewModel.isFavorite.observe(viewLifecycleOwner) { isFavorite ->
-            updateFavoriteButton(isFavorite)
+            updateProgress(state.currentPosition)
         }
 
         viewModel.playlists.observe(viewLifecycleOwner) { playlists ->
@@ -258,7 +253,8 @@ class MediaFragment : Fragment(R.layout.fragment_media) {
 
     override fun onPause() {
         super.onPause()
-        if (viewModel.playerState.value == PlayerState.PLAYING) {
+        val currentState = viewModel.playerScreenState.value
+        if (currentState?.playerState == PlayerState.PLAYING) {
             viewModel.playPause()
         }
     }

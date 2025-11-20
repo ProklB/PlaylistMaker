@@ -83,6 +83,10 @@ val dataModule = module {
     }
 
     factory<PlaylistRepository> {
-        PlaylistRepositoryImpl(get(), get())
+        PlaylistRepositoryImpl(get(), get(), get())
+    }
+
+    single {
+        get<AppDatabase>().playlistTracksDao()
     }
 }

@@ -6,7 +6,7 @@ import androidx.room.RoomDatabase
 import android.content.Context
 
 @Database(
-    entities = [FavoriteTrackEntity::class, PlaylistEntity::class],
+    entities = [FavoriteTrackEntity::class, PlaylistEntity::class, PlaylistTrackEntity::class],
     version = 1,
     exportSchema = false
 )
@@ -14,6 +14,8 @@ abstract class AppDatabase : RoomDatabase() {
 
     abstract fun favoriteTracksDao(): FavoriteTracksDao
     abstract fun playlistsDao(): PlaylistsDao
+
+    abstract fun playlistTracksDao(): PlaylistTracksDao
 
     companion object {
         private const val DATABASE_NAME = "playlist_maker.db"
