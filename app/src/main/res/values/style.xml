@@ -41,14 +41,10 @@
         <item name="android:textColor">@color/text_trackname</item>
     </style>
 
-    <style name="menuPlaylistText" parent="trackNameTextFont">
-        <item name="android:textColor">@color/text_textview</item>
-    </style>
-
     <style name="trackNameText">
         <item name="android:fontFamily">@font/ys_display_medium</item>
         <item name="android:textSize">22sp</item>
-        <item name="android:textColor">@color/icon_button</item>
+        <item name="android:textColor">@color/text_textview</item>
     </style>
 
     <style name="trackInfoTextFont">
@@ -112,67 +108,6 @@
 
     <style name="BottomNavigationTextInactive" parent="TextAppearance.MaterialComponents.Caption">
         <item name="android:textSize">@dimen/text_size_06</item>
-    </style>
-
-    <style name="TextInputLayoutStyle" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">
-        <item name="boxBackgroundColor">@color/bg_secondary</item>
-        <item name="boxStrokeColor">@color/text_input_stroke_color</item>
-        <item name="boxCornerRadiusBottomStart">4dp</item>
-        <item name="boxCornerRadiusBottomEnd">4dp</item>
-        <item name="boxCornerRadiusTopStart">4dp</item>
-        <item name="boxCornerRadiusTopEnd">4dp</item>
-        <item name="android:fontFamily">@font/ys_display_regular</item>
-        <item name="hintTextColor">@color/text_input_stroke_color</item>
-        <item name="hintTextAppearance">@style/HintTextAppearance</item>
-        <item name="android:textAppearance">@style/TextInputEditTextAppearance</item>
-    </style>
-
-    <style name="trackNamePlaylistTextFont" parent="trackNameTextFont">>
-        <item name="android:textColor">@color/text_textview</item>
-    </style>
-
-    <style name="add_to_playlist" parent="library_text_01">>
-        <item name="android:textColor">@color/text_textview</item>
-    </style>
-
-    <style name="HintTextAppearance">
-        <item name="android:textSize">12sp</item>
-
-    </style>
-
-    <style name="TextInputEditTextAppearance">
-        <item name="android:textSize">16sp</item>
-        <item name="android:textColor">@color/text_textview</item>
-    </style>
-
-    <style name="RoundedCorners" parent="">
-        <item name="cornerFamily">rounded</item>
-        <item name="cornerSize">8dp</item>
-    </style>
-
-    <style name="CustomAlertDialog" parent="ThemeOverlay.Material3.MaterialAlertDialog">
-        <item name="android:windowBackground">@android:color/white</item>
-        <item name="materialAlertDialogBodyTextStyle">@style/CustomAlertDialogText</item>
-        <item name="buttonBarPositiveButtonStyle">@style/CustomAlertDialogButton</item>
-        <item name="buttonBarNegativeButtonStyle">@style/CustomAlertDialogButton</item>
-    </style>
-
-    <style name="CustomAlertDialogText" parent="MaterialAlertDialog.Material3.Body.Text">
-        <item name="android:textColor">#1A1B22</item>
-        <item name="android:textSize">14sp</item>
-        <item name="android:fontFamily">@font/ys_display_regular</item>
-    </style>
-
-    <style name="CustomAlertDialogButton">
-        <item name="android:textColor">#3772E7</item>
-        <item name="android:textSize">14sp</item>
-        <item name="android:fontFamily">@font/ys_display_medium</item>
-    </style>
-
-    <style name="CustomAlertDialogTitle" parent="MaterialAlertDialog.Material3.Title.Text">
-        <item name="android:textColor">#1A1B22</item>
-        <item name="android:textSize">14sp</item>
-        <item name="android:fontFamily">@font/ys_display_medium</item>
     </style>
 
 </resources>

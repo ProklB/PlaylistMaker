@@ -26,12 +26,6 @@
         <action
             android:id="@+id/action_libraryFragment_to_mediaFragment"
             app:destination="@id/mediaFragment" />
-        <action
-            android:id="@+id/action_libraryFragment_to_createPlaylistFragment"
-            app:destination="@id/createPlaylistFragment" />
-        <action
-            android:id="@+id/action_libraryFragment_to_playlistDetailsFragment"
-            app:destination="@id/playlistDetailsFragment" />
 
     </fragment>
 
@@ -45,42 +39,6 @@
         android:id="@+id/mediaFragment"
         android:name="com.hfad.playlistmaker.player.ui.MediaFragment"
         android:label="Media Player"
-        tools:layout="@layout/fragment_media">
-
-        <action
-            android:id="@+id/action_mediaFragment_to_createPlaylistFragment"
-            app:destination="@id/createPlaylistFragment" />
-
-    </fragment>
-
-    <fragment
-        android:id="@+id/createPlaylistFragment"
-        android:name="com.hfad.playlistmaker.playlist.ui.create.CreatePlaylistFragment"
-        android:label="Новый плейлист"
-        tools:layout="@layout/fragment_create_playlist" />
-
-    <fragment
-        android:id="@+id/playlistDetailsFragment"
-        android:name="com.hfad.playlistmaker.playlist.ui.details.PlaylistDetailsFragment"
-        android:label="Плейлист"
-        tools:layout="@layout/fragment_playlist_details">
-
-        <action
-            android:id="@+id/action_playlistDetailsFragment_to_mediaFragment"
-            app:destination="@id/mediaFragment" />
-
-        <action
-            android:id="@+id/action_playlistDetailsFragment_to_editPlaylistFragment"
-            app:destination="@id/editPlaylistFragment" />
-
-    </fragment>
-
-    <fragment
-        android:id="@+id/editPlaylistFragment"
-        android:name="com.hfad.playlistmaker.playlist.ui.edit.EditPlaylistFragment"
-        android:label="Редактировать плейлист"
-        tools:layout="@layout/fragment_create_playlist">
-
-    </fragment>
+        tools:layout="@layout/fragment_media" />
 
 </navigation>

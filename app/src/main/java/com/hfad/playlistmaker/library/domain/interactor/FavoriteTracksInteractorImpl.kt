@@ -20,8 +20,4 @@ class FavoriteTracksInteractorImpl(
     override fun getAllFavoriteTracks(): Flow<List<Track>> {
         return repository.getAllFavoriteTracks()
     }
-
-    override suspend fun isTrackInFavorites(trackId: Int): Boolean {
-        return repository.isTrackInFavorites(trackId)
-    }
 }
