@@ -1,0 +1,48 @@
+package com.hfad.playlistmaker.di
+
+import com.hfad.playlistmaker.library.domain.interactor.FavoriteTracksInteractor
+import com.hfad.playlistmaker.library.domain.interactor.FavoriteTracksInteractorImpl
+import com.hfad.playlistmaker.player.domain.interactor.PlayerInteractor
+import com.hfad.playlistmaker.player.domain.interactor.PlayerInteractorImpl
+import com.hfad.playlistmaker.playlist.domain.interactor.PlaylistInteractor
+import com.hfad.playlistmaker.playlist.domain.interactor.PlaylistInteractorImpl
+import com.hfad.playlistmaker.search.data.repository.SearchRepositoryImpl
+import com.hfad.playlistmaker.search.domain.interactor.SearchHistoryInteractor
+import com.hfad.playlistmaker.search.domain.interactor.SearchHistoryInteractorImpl
+import com.hfad.playlistmaker.search.domain.interactor.SearchInteractor
+import com.hfad.playlistmaker.search.domain.interactor.SearchInteractorImpl
+import com.hfad.playlistmaker.search.domain.repository.SearchRepository
+import com.hfad.playlistmaker.settings.domain.interactor.SettingsInteractor
+import com.hfad.playlistmaker.settings.domain.interactor.SettingsInteractorImpl
+import org.koin.dsl.module
+
+val interactorModule = module {
+
+    factory<SearchInteractor> {
+        SearchInteractorImpl(get())
+    }
+
+    factory<SearchHistoryInteractor> {
+        SearchHistoryInteractorImpl(get())
+    }
+
+    factory<PlayerInteractor> {
+        PlayerInteractorImpl(get())
+    }
+
+    single<SettingsInteractor> {
+        SettingsInteractorImpl(get())
+    }
+
+    factory<FavoriteTracksInteractor> {
+        FavoriteTracksInteractorImpl(get())
+    }
+
+    factory<SearchRepository> {
+        SearchRepositoryImpl(get(), get())
+    }
+
+    factory<PlaylistInteractor> {
+        PlaylistInteractorImpl(get())
+    }
+}

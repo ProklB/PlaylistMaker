@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/libraryFragment">
+
+    <fragment
+        android:id="@+id/searchFragment"
+        android:name="com.hfad.playlistmaker.search.ui.SearchFragment"
+        android:label="@string/button_search"
+        tools:layout="@layout/fragment_search">
+
+        <action
+            android:id="@+id/action_searchFragment_to_mediaFragment"
+            app:destination="@id/mediaFragment" />
+
+    </fragment>
+
+    <fragment
+        android:id="@+id/libraryFragment"
+        android:name="com.hfad.playlistmaker.library.ui.LibraryFragment"
+        android:label="@string/library_title"
+        tools:layout="@layout/fragment_library">
+
+        <action
+            android:id="@+id/action_libraryFragment_to_mediaFragment"
+            app:destination="@id/mediaFragment" />
+        <action
+            android:id="@+id/action_libraryFragment_to_createPlaylistFragment"
+            app:destination="@id/createPlaylistFragment" />
+
+    </fragment>
+
+    <fragment
+        android:id="@+id/settingsFragment"
+        android:name="com.hfad.playlistmaker.settings.ui.SettingsFragment"
+        android:label="@string/button_settings"
+        tools:layout="@layout/fragment_settings" />
+
+    <fragment
+        android:id="@+id/mediaFragment"
+        android:name="com.hfad.playlistmaker.player.ui.MediaFragment"
+        android:label="Media Player"
+        tools:layout="@layout/fragment_media">
+
+        <action
+            android:id="@+id/action_mediaFragment_to_createPlaylistFragment"
+            app:destination="@id/createPlaylistFragment" />
+
+    </fragment>
+
+    <fragment
+        android:id="@+id/createPlaylistFragment"
+        android:name="com.hfad.playlistmaker.playlist.ui.create.CreatePlaylistFragment"
+        android:label="Новый плейлист"
+        tools:layout="@layout/fragment_create_playlist" />
+
+</navigation>

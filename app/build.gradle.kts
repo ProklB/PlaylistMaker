@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     id("kotlin-parcelize")
+    id("kotlin-kapt")
 }
 
 android {
@@ -16,6 +17,10 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    buildFeatures {
+        viewBinding = true
     }
 
     buildTypes {
@@ -48,14 +53,28 @@ dependencies {
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
 
-    implementation ("com.google.android.material:material:1.6.1")
-    implementation ("com.github.bumptech.glide:glide:4.14.2")
-    annotationProcessor ("com.github.bumptech.glide:compiler:4.14.2")
+    implementation (libs.material.v161)
+    implementation (libs.glide)
+    annotationProcessor (libs.compiler)
 
-    implementation ("androidx.cardview:cardview:1.0.0")
+    implementation (libs.androidx.cardview)
 
-    implementation ("com.squareup.retrofit2:retrofit:2.9.0")
+    implementation (libs.retrofit)
+    implementation (libs.converter.gson)
+    implementation (libs.gson)
 
-    implementation ("com.squareup.retrofit2:converter-gson:2.9.0")
+    implementation (libs.androidx.lifecycle.viewmodel.ktx)
+    implementation (libs.androidx.lifecycle.livedata.ktx)
+    implementation (libs.androidx.lifecycle.runtime.ktx)
 
+    implementation (libs.koin.android)
+
+    implementation(libs.androidx.navigation.fragment.ktx)
+    implementation(libs.androidx.navigation.ui.ktx)
+    implementation(libs.androidx.fragment.ktx)
+    implementation (libs.coroutines.android)
+
+    implementation(libs.androidx.room.runtime)
+    implementation(libs.androidx.room.ktx)
+    kapt(libs.androidx.room.compiler)
 }

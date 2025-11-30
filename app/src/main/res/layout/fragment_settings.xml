@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@color/bg_secondary"
+    android:orientation="vertical"
+    style = "@style/LayoutStyle">
+
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:titleTextAppearance="@style/MyTitleTextStyle"
+        app:title="@string/button_settings"/>
+
+    <com.google.android.material.switchmaterial.SwitchMaterial
+        android:id="@+id/themeSwitcher"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:text="@string/switch_themes"
+        app:thumbTint="@color/switch_track_tint"
+        app:trackTint="@color/switch_thumb_tint"
+        style ="@style/MaterialTextViewStyle"
+        android:layout_marginTop="24dp"/>
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/settings_share"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:drawableEnd="@drawable/share"
+        android:text="@string/textview_share"
+        style ="@style/MaterialTextViewStyle"/>
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/settings_support"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:drawableEnd="@drawable/support"
+        android:text="@string/textview_support"
+        style ="@style/MaterialTextViewStyle"/>
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/settings_agreement"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:drawableEnd="@drawable/arrowforward"
+        android:text="@string/textview_arrowForward"
+        style ="@style/MaterialTextViewStyle"/>
+
+</LinearLayout>
+
