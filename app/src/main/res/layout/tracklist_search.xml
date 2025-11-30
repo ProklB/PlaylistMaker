@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/artworkCardView"
+        android:layout_width="@dimen/artwork_square"
+        android:layout_height="@dimen/artwork_square"
+        android:layout_marginStart="13dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"
+        app:cardCornerRadius="2dp"
+        app:cardElevation="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageView
+            android:id="@+id/artworkImageView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scaleType="centerCrop"
+            android:background="@color/bg_secondary"/>
+    </androidx.cardview.widget.CardView>
+
+    <TextView
+        android:id="@+id/trackNameTextView"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:ellipsize="end"
+        android:maxLines="1"
+        android:textAppearance="@style/trackNameTextFont"
+        app:layout_constraintEnd_toStartOf="@+id/arrowImageView"
+        app:layout_constraintStart_toEndOf="@+id/artworkCardView"
+        app:layout_constraintTop_toTopOf="@id/artworkCardView"
+        android:layout_marginStart="8dp"
+        tools:text="Название песнийййййййййййййййййййййййй" />
+
+    <TextView
+        android:id="@+id/artistNameTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:ellipsize="end"
+        android:maxLines="1"
+        app:layout_constrainedWidth="true"
+        app:layout_constraintStart_toEndOf="@id/artworkCardView"
+        app:layout_constraintEnd_toStartOf="@id/ic"
+        app:layout_constraintTop_toBottomOf="@id/trackNameTextView"
+        android:layout_marginTop="1dp"
+        android:layout_marginStart="8dp"
+        android:textAppearance="@style/trackInfoTextFont"
+        tools:text="Король и шутйййййййййййййййййййййййййййййййййййййййййййййййй" />
+
+    <ImageView
+        android:id="@+id/ic"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic"
+        app:layout_constraintBottom_toBottomOf="@id/artistNameTextView"
+        app:layout_constraintTop_toTopOf="@id/artistNameTextView"
+        app:layout_constraintStart_toEndOf="@+id/artistNameTextView"/>
+
+    <TextView
+        android:id="@+id/trackTimeTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:maxLines="1"
+        app:layout_constraintHorizontal_bias="0"
+        app:layout_constraintStart_toEndOf="@id/ic"
+        app:layout_constraintTop_toTopOf="@id/artistNameTextView"
+        app:layout_constraintBottom_toBottomOf="@id/artistNameTextView"
+        app:layout_constraintEnd_toStartOf="@id/arrowImageView"
+        android:textAppearance="@style/trackInfoTextFont"
+        tools:text="5:05"/>
+
+    <ImageView
+        android:id="@+id/arrowImageView"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_marginEnd="8dp"
+        android:src="@drawable/arrowforward"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

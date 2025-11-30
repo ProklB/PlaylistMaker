@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="bg_main">#1A1B22</color>
+    <color name="bg_secondary">#1A1B22</color>
+    <color name="text_textview">#FFFFFF</color>
+    <color name="text_title_main">#FFFFFF</color>
+    <color name="bg_edittext">#FFFFFF</color>
+    <color name="icon_color_dark">#FFFFFF</color>
+    <color name="icon_color">#1A1B22</color>
+    <color name="text_hint">#1A1B22</color>
+    <color name="switch_track_tint">#3772E7</color>
+    <color name="switch_thumb_tint">#9FBBF3</color>
+    <color name="text_trackname">#FFFFFF</color>
+    <color name="text_trackinfo">#FFFFFF</color>
+    <color name="placeholder_text">#1A1B22</color>
+    <color name="placeholder_background">#FFFFFF</color>
+    <color name="button_background">#ffffff</color>
+    <!-- Первый фрагмент и медиатека -->
+    <color name="tab_text">#FFFFFF</color>
+    <color name="tab_selected_text">#FFFFFF</color>
+    <color name="tab_indicator">#FFFFFF</color>
+    <color name="tab_background">#1A1B22</color>
+    <color name="bottomNavigation_background">#1A1B22</color>
+    <color name="bottomNavigation_active_text">#3772E7</color>
+    <color name="bottomNavigation_inactive_text">#FFFFFF</color>
+    <color name="create_playlist">#FFFFFF</color>
+</resources>

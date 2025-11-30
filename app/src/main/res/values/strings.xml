@@ -1,11 +1,67 @@
 <resources>
     <string name="app_name" translatable="false">PlaylistMaker</string>
-    <string name="title">Playlist maker</string>
-    <string name="search">Поиск</string>
-    <string name="library">Медиатека</string>
-    <string name="settings">Настройки</string>
-    <string name="themesNight">Темная тема</string>
-    <string name="share">Поделиться приложением</string>
-    <string name="support">Написать в поддержку</string>
-    <string name="arrowForward">Пользовательское соглашение</string>
+    <string name="title_main">Playlist maker</string>
+
+    <string name="button_search">Поиск</string>
+    <string name="button_library">Медиатека</string>
+    <string name="button_settings">Настройки</string>
+
+    <string name="switch_themes">Темная тема</string>
+    <string name="textview_share">Поделиться приложением</string>
+    <string name="textview_support">Написать в поддержку</string>
+    <string name="textview_arrowForward">Пользовательское соглашение</string>
+
+    <!-- Поделиться приложением -->
+    <string name="share_message">Смотри, что я нашел: %s</string>
+    <string name="share_link">https://practicum.yandex.ru/android-developer/</string>
+
+    <!-- Письмо в поддержку -->
+    <string name="support_email">proklb@ya.ru</string>
+    <string name="support_theme">Сообщение разработчикам и разработчицам приложения Playlist Maker</string>
+    <string name="support_text">Спасибо разработчикам и разработчицам за крутое приложение!</string>
+
+    <!-- Пользовательское соглашение -->
+    <string name="agreement_link">https://yandex.ru/legal/practicum_offer/</string>
+
+    <!-- Поиск -->
+    <string name="search_hint">Поиск</string>
+    <string name="search_content_description">Очистить поиск</string>
+    <string name="nothing_found">Ничего не нашлось</string>
+    <string name="update">Обновить</string>
+    <string name="server_error">Проблемы со связью\n\nЗагрузка не удалась. Проверьте подключение к интернету</string>
+    <string name="search_history_title">Вы искали</string>
+    <string name="clear_history">Очистить историю</string>
+
+    <!-- Плейер -->
+    <string name="media_trackTime">Длительность</string>
+    <string name="media_collectionName">Альбом</string>
+    <string name="media_releaseDate">Год</string>
+    <string name="media_genreName">Жанр</string>
+    <string name="media_country">Страна</string>
+    <string name="media_progressText">00:00</string>
+
+    <!-- Первый фрагмент и медиатека -->
+    <string name="library_title">Медиатека</string>
+    <string name="playlists_tab">Плейлисты</string>
+    <string name="favorites_tab">Избранные треки</string>
+
+    <string name="no_playlists_title">Вы не создали\nни одного плейлиста</string>
+    <string name="no_favorites_title">Ваша медиатека пуста</string>
+    <string name="create_playlist">Новый плейлист</string>
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <plurals name="tracks_count">
+        <item quantity="one">%d трек</item>
+        <item quantity="few">%d трека</item>
+        <item quantity="many">%d треков</item>
+        <item quantity="other">%d треков</item>
+    </plurals>
+
+    <!-- Создание плейлиста -->
+    <string name="cover_image">Обложка плейлиста</string>
+    <string name="name_playlist">Название*</string>
+    <string name="description_playlist">Описание</string>
+    <string name="create_playlist_button">Создать</string>
+    <string name="add_to_playlist">Добавить в плейлист</string>
+
 </resources>

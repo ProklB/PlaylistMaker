@@ -1,9 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <dimen name="iconPadding">20dp</dimen>
-    <dimen name="cornerRadius">16dp</dimen>
-    <dimen name="textSize_01">20sp</dimen>
-    <dimen name="textSize_02">22sp</dimen>
-    <dimen name="textSize_03">12sp</dimen>
-    <dimen name="marginTop">20dp</dimen>
+    <dimen name="icon_button_padding">20dp</dimen>
+    <dimen name="corner_radius_button">16dp</dimen>
+    <dimen name="margin_top_textview">20dp</dimen>
+    <dimen name="artwork_square">45dp</dimen>
+    <dimen name="corner_radius_button_update">54dp</dimen>
+    <dimen name="corner_radius_coverImage">8dp</dimen>
+
+    <dimen name="text_size_01">16sp</dimen>
+    <dimen name="text_size_02">22sp</dimen>
+    <dimen name="text_size_03">8sp</dimen>
+    <dimen name="text_size_04">19sp</dimen>
+    <dimen name="text_size_05">14sp</dimen>
+    <dimen name="text_size_06">12sp</dimen>
+
+    <dimen name="toast_margin_start">47dp</dimen>
+    <dimen name="toast_margin_top">0dp</dimen>
+    <dimen name="toast_margin_end">8dp</dimen>
+    <dimen name="toast_margin_bottom">56dp</dimen>
+
+    <dimen name="bottom_sheet_margin_top">295dp</dimen>
+    <dimen name="bottom_sheet_height">300dp</dimen>
+
 </resources>
