@@ -45,15 +45,9 @@ class MediaFragment : Fragment(R.layout.fragment_media) {
             return
         }
 
-        if (track.previewUrl.isBlank()) {
-            binding.playButton.isEnabled = false
-            return
-        }
-
         viewModel.setTrack(track)
 
         initBottomSheet()
-        observeViewModel()
 
         viewModel.playerScreenState.observe(viewLifecycleOwner) { state ->
             updatePlayButton(state.playerState)
@@ -191,34 +185,10 @@ class MediaFragment : Fragment(R.layout.fragment_media) {
 
     private fun updatePlayButton(state: PlayerState) {
         binding.playButton.isEnabled = state != PlayerState.DEFAULT
-
-        val buttonResource = when (state) {
-            PlayerState.PLAYING -> {
-                R.drawable.button_pause
-            }
-            PlayerState.PREPARED, PlayerState.PAUSED -> {
-                R.drawable.button_play
-            }
-            PlayerState.DEFAULT -> {
-                R.drawable.button_play
-            }
-        }
-
-        binding.playButton.setImageResource(buttonResource)
-    }
-    private fun observeViewModel() {
-        viewModel.playerScreenState.observe(viewLifecycleOwner) { state ->
-            updatePlayButton(state.playerState)
-            updateFavoriteButton(state.isFavorite)
-            if (state.playerState == PlayerState.PREPARED) {
-                updateProgress(0)
-            }
-            updateProgress(state.currentPosition)
-        }
-
-        viewModel.playlists.observe(viewLifecycleOwner) { playlists ->
-            playlistsAdapter.updatePlaylists(playlists)
-        }
+        binding.playButton.setImageResource(
+            if (state == PlayerState.PLAYING) R.drawable.button_pause
+            else R.drawable.button_play
+        )
     }
 
     private fun updateFavoriteButton(isFavorite: Boolean) {
