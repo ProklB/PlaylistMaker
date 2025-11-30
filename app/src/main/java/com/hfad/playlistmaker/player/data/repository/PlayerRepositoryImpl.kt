@@ -17,6 +17,8 @@ class PlayerRepositoryImpl(
         mediaPlayer.apply {
             try {
                 reset()
+                setDataSource(previewUrl)
+                prepareAsync()
                 setOnPreparedListener {
                     playerState = PlayerState.PREPARED
                     onPreparedListener?.invoke()
@@ -25,9 +27,6 @@ class PlayerRepositoryImpl(
                     playerState = PlayerState.PREPARED
                     onCompletionListener?.invoke()
                 }
-                setDataSource(previewUrl)
-                prepareAsync()
-                playerState = PlayerState.DEFAULT
             } catch (e: IOException) {
                 playerState = PlayerState.DEFAULT
             }
@@ -43,17 +42,13 @@ class PlayerRepositoryImpl(
     }
 
     override fun startPlayer() {
-        if (playerState == PlayerState.PREPARED || playerState == PlayerState.PAUSED) {
-            mediaPlayer.start()
-            playerState = PlayerState.PLAYING
-        }
+        mediaPlayer.start()
+        playerState = PlayerState.PLAYING
     }
 
     override fun pausePlayer() {
-        if (playerState == PlayerState.PLAYING) {
-            mediaPlayer.pause()
-            playerState = PlayerState.PAUSED
-        }
+        mediaPlayer.pause()
+        playerState = PlayerState.PAUSED
     }
 
     override fun releasePlayer() {

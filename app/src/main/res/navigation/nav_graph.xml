@@ -29,9 +29,6 @@
         <action
             android:id="@+id/action_libraryFragment_to_createPlaylistFragment"
             app:destination="@id/createPlaylistFragment" />
-        <action
-            android:id="@+id/action_libraryFragment_to_playlistDetailsFragment"
-            app:destination="@id/playlistDetailsFragment" />
 
     </fragment>
 
@@ -58,29 +55,5 @@
         android:name="com.hfad.playlistmaker.playlist.ui.create.CreatePlaylistFragment"
         android:label="Новый плейлист"
         tools:layout="@layout/fragment_create_playlist" />
-
-    <fragment
-        android:id="@+id/playlistDetailsFragment"
-        android:name="com.hfad.playlistmaker.playlist.ui.details.PlaylistDetailsFragment"
-        android:label="Плейлист"
-        tools:layout="@layout/fragment_playlist_details">
-
-        <action
-            android:id="@+id/action_playlistDetailsFragment_to_mediaFragment"
-            app:destination="@id/mediaFragment" />
-
-        <action
-            android:id="@+id/action_playlistDetailsFragment_to_editPlaylistFragment"
-            app:destination="@id/editPlaylistFragment" />
-
-    </fragment>
-
-    <fragment
-        android:id="@+id/editPlaylistFragment"
-        android:name="com.hfad.playlistmaker.playlist.ui.edit.EditPlaylistFragment"
-        android:label="Редактировать плейлист"
-        tools:layout="@layout/fragment_create_playlist">
-
-    </fragment>
 
 </navigation>

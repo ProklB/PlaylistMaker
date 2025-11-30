@@ -10,7 +10,6 @@ import com.hfad.playlistmaker.databinding.FragmentPlaylistsBinding
 import com.hfad.playlistmaker.library.ui.adapter.PlaylistAdapter
 import com.hfad.playlistmaker.library.ui.viewmodel.PlaylistsState
 import com.hfad.playlistmaker.library.ui.viewmodel.PlaylistsViewModel
-import com.hfad.playlistmaker.playlist.domain.models.Playlist
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class PlaylistsFragment : Fragment(R.layout.fragment_playlists) {
@@ -65,11 +64,8 @@ class PlaylistsFragment : Fragment(R.layout.fragment_playlists) {
         adapter.updatePlaylists(playlists)
     }
 
-    private fun onPlaylistClick(playlist: Playlist) {
-        val bundle = Bundle().apply {
-            putLong("playlist_id", playlist.id)
-        }
-        findNavController().navigate(R.id.action_libraryFragment_to_playlistDetailsFragment, bundle)
+    private fun onPlaylistClick(playlist: com.hfad.playlistmaker.playlist.domain.models.Playlist) {
+        // TODO: Реализовать переход к деталям плейлиста
     }
 
     override fun onResume() {

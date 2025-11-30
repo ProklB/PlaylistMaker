@@ -11,20 +11,14 @@ class TrackAdapter(
     private val onClick: (Track) -> Unit
 ) : RecyclerView.Adapter<TrackViewHolder>() {
 
-    private var onLongClick: ((Track) -> Unit)? = null
-
-    fun setOnLongClickListener(listener: (Track) -> Unit) {
-        onLongClick = listener
-    }
-
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TrackViewHolder {
         val view = LayoutInflater.from(parent.context)
-            .inflate(R.layout.item_track_search, parent, false)
+            .inflate(R.layout.tracklist_search, parent, false)
         return TrackViewHolder(view)
     }
 
     override fun onBindViewHolder(holder: TrackViewHolder, position: Int) {
-        holder.bind(trackList[position], onClick, onLongClick)
+        holder.bind(trackList[position], onClick)
     }
 
     override fun getItemCount(): Int = trackList.size

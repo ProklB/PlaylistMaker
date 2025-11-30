@@ -10,7 +10,7 @@ import com.hfad.playlistmaker.playlist.domain.models.Playlist
 
 class PlaylistAdapter(
     private var playlists: List<Playlist>,
-    private val onPlaylistClick: (Playlist) -> Unit
+    private val onClick: (Playlist) -> Unit
 ) : RecyclerView.Adapter<PlaylistAdapter.PlaylistViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PlaylistViewHolder {
@@ -56,7 +56,7 @@ class PlaylistAdapter(
             }
 
             itemView.setOnClickListener {
-                onPlaylistClick(playlist)
+                onClick(playlist)
             }
         }
     }

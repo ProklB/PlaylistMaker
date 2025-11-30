@@ -56,11 +56,8 @@ class MediaViewModel(
 
     fun setTrack(track: Track) {
         currentTrack = track
-        viewModelScope.launch {
-            val isFavorite = favoriteTracksInteractor.isTrackInFavorites(track.trackId)
-            updatePlayerScreenState { currentState ->
-                currentState.copy(isFavorite = isFavorite)
-            }
+        updatePlayerScreenState { currentState ->
+            currentState.copy(isFavorite = track.isFavorite)
         }
     }
 
@@ -73,6 +70,7 @@ class MediaViewModel(
     }
 
     fun preparePlayer(previewUrl: String) {
+        playerInteractor.preparePlayer(previewUrl)
         playerInteractor.setOnPreparedListener {
             updatePlayerScreenState { currentState ->
                 currentState.copy(playerState = PlayerState.PREPARED)
@@ -89,31 +87,28 @@ class MediaViewModel(
             stopProgressUpdates()
         }
 
-        playerInteractor.preparePlayer(previewUrl)
+        updatePlayerScreenState { currentState ->
+            currentState.copy(playerState = PlayerState.DEFAULT)
+        }
     }
 
     fun playPause() {
-        val currentPlayerState = playerInteractor.getPlayerState()
-
-        when (currentPlayerState) {
+        when (playerInteractor.getPlayerState()) {
             PlayerState.PLAYING -> {
                 playerInteractor.pausePlayer()
-                _playerScreenState.value = _playerScreenState.value?.copy(
-                    playerState = PlayerState.PAUSED
-                ) ?: PlayerScreenState(playerState = PlayerState.PAUSED)
+                updatePlayerScreenState { currentState ->
+                    currentState.copy(playerState = PlayerState.PAUSED)
+                }
+                stopProgressUpdates()
             }
             PlayerState.PREPARED, PlayerState.PAUSED -> {
                 playerInteractor.startPlayer()
-                _playerScreenState.value = _playerScreenState.value?.copy(
-                    playerState = PlayerState.PLAYING
-                ) ?: PlayerScreenState(playerState = PlayerState.PLAYING)
+                updatePlayerScreenState { currentState ->
+                    currentState.copy(playerState = PlayerState.PLAYING)
+                }
                 startProgressUpdates()
             }
-            PlayerState.DEFAULT -> {
-                currentTrack?.previewUrl?.let { url ->
-                    preparePlayer(url)
-                }
-            }
+            else -> {}
         }
     }
 
