@@ -1,0 +1,63 @@
+package com.hfad.playlistmaker.library.ui.adapter
+
+import android.view.LayoutInflater
+import android.view.ViewGroup
+import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
+import com.hfad.playlistmaker.R
+import com.hfad.playlistmaker.databinding.ItemPlaylistBinding
+import com.hfad.playlistmaker.playlist.domain.models.Playlist
+
+class PlaylistAdapter(
+    private var playlists: List<Playlist>,
+    private val onPlaylistClick: (Playlist) -> Unit
+) : RecyclerView.Adapter<PlaylistAdapter.PlaylistViewHolder>() {
+
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PlaylistViewHolder {
+        val binding = ItemPlaylistBinding.inflate(
+            LayoutInflater.from(parent.context),
+            parent,
+            false
+        )
+        return PlaylistViewHolder(binding)
+    }
+
+    override fun onBindViewHolder(holder: PlaylistViewHolder, position: Int) {
+        holder.bind(playlists[position])
+    }
+
+    override fun getItemCount(): Int = playlists.size
+
+    fun updatePlaylists(newPlaylists: List<Playlist>) {
+        playlists = newPlaylists
+        notifyDataSetChanged()
+    }
+
+    inner class PlaylistViewHolder(
+        private val binding: ItemPlaylistBinding
+    ) : RecyclerView.ViewHolder(binding.root) {
+
+        fun bind(playlist: Playlist) {
+            binding.playlistName.text = playlist.name
+            binding.trackCount.text = itemView.context.resources.getQuantityString(
+                R.plurals.tracks_count,
+                playlist.trackCount,
+                playlist.trackCount
+            )
+
+            playlist.coverPath?.let { coverPath ->
+                Glide.with(itemView)
+                    .load(coverPath)
+                    .placeholder(R.drawable.playsholder_play_light)
+                    .centerCrop()
+                    .into(binding.playlistCover)
+            } ?: run {
+                binding.playlistCover.setImageResource(R.drawable.playsholder_play_light)
+            }
+
+            itemView.setOnClickListener {
+                onPlaylistClick(playlist)
+            }
+        }
+    }
+}

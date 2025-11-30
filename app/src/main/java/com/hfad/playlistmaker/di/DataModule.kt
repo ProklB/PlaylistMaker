@@ -9,6 +9,8 @@ import com.hfad.playlistmaker.library.data.repository.FavoriteTracksRepositoryIm
 import com.hfad.playlistmaker.library.domain.repository.FavoriteTracksRepository
 import com.hfad.playlistmaker.player.data.repository.PlayerRepositoryImpl
 import com.hfad.playlistmaker.player.domain.repository.PlayerRepository
+import com.hfad.playlistmaker.playlist.data.repository.PlaylistRepositoryImpl
+import com.hfad.playlistmaker.playlist.domain.repository.PlaylistRepository
 import com.hfad.playlistmaker.search.data.network.ItunesApi
 import com.hfad.playlistmaker.search.data.network.NetworkClient
 import com.hfad.playlistmaker.search.data.network.RetrofitNetworkClient
@@ -74,5 +76,17 @@ val dataModule = module {
 
     factory<FavoriteTracksRepository> {
         FavoriteTracksRepositoryImpl(get())
+    }
+
+    single {
+        get<AppDatabase>().playlistsDao()
+    }
+
+    factory<PlaylistRepository> {
+        PlaylistRepositoryImpl(get(), get(), get())
+    }
+
+    single {
+        get<AppDatabase>().playlistTracksDao()
     }
 }

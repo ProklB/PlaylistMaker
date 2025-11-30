@@ -4,6 +4,8 @@ import com.hfad.playlistmaker.library.domain.interactor.FavoriteTracksInteractor
 import com.hfad.playlistmaker.library.domain.interactor.FavoriteTracksInteractorImpl
 import com.hfad.playlistmaker.player.domain.interactor.PlayerInteractor
 import com.hfad.playlistmaker.player.domain.interactor.PlayerInteractorImpl
+import com.hfad.playlistmaker.playlist.domain.interactor.PlaylistInteractor
+import com.hfad.playlistmaker.playlist.domain.interactor.PlaylistInteractorImpl
 import com.hfad.playlistmaker.search.data.repository.SearchRepositoryImpl
 import com.hfad.playlistmaker.search.domain.interactor.SearchHistoryInteractor
 import com.hfad.playlistmaker.search.domain.interactor.SearchHistoryInteractorImpl
@@ -38,5 +40,9 @@ val interactorModule = module {
 
     factory<SearchRepository> {
         SearchRepositoryImpl(get(), get())
+    }
+
+    factory<PlaylistInteractor> {
+        PlaylistInteractorImpl(get())
     }
 }
