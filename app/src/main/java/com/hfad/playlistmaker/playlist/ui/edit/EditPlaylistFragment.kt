@@ -24,6 +24,7 @@ import java.util.Date
 import java.util.Locale
 import android.view.Gravity
 import android.widget.LinearLayout
+import androidx.activity.OnBackPressedCallback
 import androidx.core.content.ContextCompat
 
 class EditPlaylistFragment : Fragment() {
@@ -52,6 +53,12 @@ class EditPlaylistFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        _binding = FragmentCreatePlaylistBinding.bind(view)
+
+        requireActivity().onBackPressedDispatcher.addCallback(
+            viewLifecycleOwner,
+            backPressedCallback
+        )
 
         val playlistId = arguments?.getLong("playlist_id", -1L) ?: -1L
         if (playlistId == -1L) {
@@ -64,6 +71,12 @@ class EditPlaylistFragment : Fragment() {
         setupToolbar()
         setupViews()
         observeViewModel()
+    }
+
+    private val backPressedCallback = object : OnBackPressedCallback(true) {
+        override fun handleOnBackPressed() {
+            findNavController().navigateUp()
+        }
     }
 
     private fun setupToolbar() {
@@ -113,7 +126,7 @@ class EditPlaylistFragment : Fragment() {
     }
 
     private fun showErrorMessage() {
-        showCustomToast("Ошибка при сохранении плейлиста")
+        showCustomToast(getString(R.string.save_playlist_error))
     }
 
     private fun observeViewModel() {
@@ -217,6 +230,7 @@ class EditPlaylistFragment : Fragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
+        backPressedCallback.remove()  // Не забудьте удалить callback
         _binding = null
     }
 }

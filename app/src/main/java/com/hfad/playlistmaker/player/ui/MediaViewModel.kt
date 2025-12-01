@@ -32,6 +32,9 @@ class MediaViewModel(
     private val _playlists = MutableLiveData<List<Playlist>>()
     val playlists: LiveData<List<Playlist>> = _playlists
 
+    private val _isBottomSheetOpen = MutableLiveData(false)
+    val isBottomSheetOpen: LiveData<Boolean> = _isBottomSheetOpen
+
     private var currentTrack: Track? = null
     private var progressUpdateJob: Job? = null
 
@@ -133,6 +136,8 @@ class MediaViewModel(
     }
 
     private fun startProgressUpdates() {
+        if (_isBottomSheetOpen.value == true) return
+
         stopProgressUpdates()
         progressUpdateJob = viewModelScope.launch {
             while (isActive) {
@@ -179,6 +184,15 @@ class MediaViewModel(
             } catch (e: Exception) {
                 _addToPlaylistStatus.postValue(AddToPlaylistStatus.Error)
             }
+        }
+    }
+
+    fun setBottomSheetOpen(isOpen: Boolean) {
+        _isBottomSheetOpen.value = isOpen
+        if (isOpen) {
+            stopProgressUpdates()
+        } else if (playerInteractor.getPlayerState() == PlayerState.PLAYING) {
+            startProgressUpdates()
         }
     }
 

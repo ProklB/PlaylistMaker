@@ -67,4 +67,31 @@
     <string name="edit_playlist">Редактировать</string>
     <string name="save">Сохранить</string>
     <string name="empty_playlist_message">В плейлисте еще нет треков</string>
+
+    <!-- PlaylistDetailsFragment -->
+    <string name="share_playlist_empty">В этом плейлисте нет списка треков, которым можно поделиться</string>
+    <string name="share_playlist_error">Ошибка при подготовке данных для отправки</string>
+    <string name="delete_playlist_confirm">Хотите удалить плейлист?</string>
+    <string name="delete_track_confirm">Хотите удалить трек?</string>
+    <string name="no">НЕТ</string>
+    <string name="yes">ДА</string>
+    <string name="share_playlist_chooser">Поделиться плейлистом</string>
+
+    <!-- CreatePlaylistFragment -->
+    <string name="create_playlist_error">Ошибка при создании плейлиста</string>
+    <string name="finish_creation_title">Завершить создание плейлиста?</string>
+    <string name="finish_creation_message">Все несохраненные данные будут потеряны</string>
+    <string name="finish">Завершить</string>
+    <string name="cancel">Отмена</string>
+    <string name="playlist_created_with_name">Плейлист \"%s\" создан</string>
+    <string name="playlist_created">Плейлист создан</string>
+
+    <!-- EditPlaylistFragment -->
+    <string name="save_playlist_error">Ошибка при сохранении плейлиста</string>
+    <string name="playlist_saved_with_name">Плейлист \"%s\" сохранен</string>
+    <string name="playlist_saved">Плейлист сохранен</string>
+
+    <string name="track_added_to_playlist">Добавлено в плейлист %s</string>
+    <string name="track_already_in_playlist">Трек уже добавлен в плейлист %s</string>
+    <string name="error_adding_to_playlist">Ошибка при добавлении в плейлист</string>
 </resources>

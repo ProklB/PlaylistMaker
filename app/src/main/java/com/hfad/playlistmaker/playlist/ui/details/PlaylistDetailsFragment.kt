@@ -29,6 +29,7 @@ import android.widget.TextView
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import androidx.appcompat.app.AlertDialog
+import androidx.core.content.ContextCompat
 
 class PlaylistDetailsFragment : Fragment(R.layout.fragment_playlist_details) {
 
@@ -131,7 +132,10 @@ class PlaylistDetailsFragment : Fragment(R.layout.fragment_playlist_details) {
                 val bundle = Bundle().apply {
                     putLong("playlist_id", currentState.playlist.id)
                 }
-                findNavController().navigate(R.id.action_playlistDetailsFragment_to_editPlaylistFragment, bundle)
+                findNavController().navigate(
+                    R.id.action_playlistDetailsFragment_to_editPlaylistFragment,
+                    bundle
+                )
             }
         }
 
@@ -178,14 +182,14 @@ class PlaylistDetailsFragment : Fragment(R.layout.fragment_playlist_details) {
                 val currentState = viewModel.playlistDetailsState.value
                 if (currentState is PlaylistDetailsState.Content) {
                     if (currentState.tracks.isEmpty()) {
-                        showToast("В этом плейлисте нет списка треков, которым можно поделиться")
+                        showToast(getString(R.string.share_playlist_empty))
                     } else {
                         val shareText = getShareText(currentState.playlist, currentState.tracks)
                         sharePlaylist(shareText)
                     }
                 }
             } catch (e: Exception) {
-                showToast("Ошибка при подготовке данных для отправки")
+                showToast(getString(R.string.share_playlist_error))
             }
         }
     }
@@ -234,7 +238,7 @@ class PlaylistDetailsFragment : Fragment(R.layout.fragment_playlist_details) {
             type = "text/plain"
         }
 
-        val shareChooser = Intent.createChooser(shareIntent, "Поделиться плейлистом")
+        val shareChooser = Intent.createChooser(shareIntent, getString(R.string.share_playlist_chooser))
         startActivity(shareChooser)
     }
 
@@ -242,11 +246,11 @@ class PlaylistDetailsFragment : Fragment(R.layout.fragment_playlist_details) {
         hideMenuBottomSheet()
 
         val dialog = MaterialAlertDialogBuilder(requireContext())
-            .setMessage("Хотите удалить плейлист?")
-            .setNegativeButton("НЕТ") { dialog, _ ->
+            .setMessage(getString(R.string.delete_playlist_confirm))
+            .setNegativeButton(getString(R.string.no)) { dialog, _ ->
                 dialog.dismiss()
             }
-            .setPositiveButton("ДА") { dialog, _ ->
+            .setPositiveButton(getString(R.string.yes)) { dialog, _ ->
                 viewModel.deletePlaylist()
                 dialog.dismiss()
             }
@@ -254,20 +258,22 @@ class PlaylistDetailsFragment : Fragment(R.layout.fragment_playlist_details) {
             .create()
 
         dialog.setOnShowListener {
-            dialog.window?.setBackgroundDrawable(ColorDrawable(Color.WHITE))
+            dialog.window?.setBackgroundDrawable(
+                ColorDrawable(ContextCompat.getColor(requireContext(), R.color.dialog_background_white))
+            )
 
             val messageView = dialog.findViewById<TextView>(android.R.id.message)
             messageView?.let {
-                it.setTextColor(Color.parseColor("#1A1B22"))
+                it.setTextColor(ContextCompat.getColor(requireContext(), R.color.dialog_text_dark))
                 it.textSize = 14f
             }
 
             val negativeButton = dialog.getButton(AlertDialog.BUTTON_NEGATIVE)
-            negativeButton.setTextColor(Color.parseColor("#3772E7"))
+            negativeButton.setTextColor(ContextCompat.getColor(requireContext(), R.color.dialog_button_blue))
             negativeButton.textSize = 14f
 
             val positiveButton = dialog.getButton(AlertDialog.BUTTON_POSITIVE)
-            positiveButton.setTextColor(Color.parseColor("#3772E7"))
+            positiveButton.setTextColor(ContextCompat.getColor(requireContext(), R.color.dialog_button_blue))
             positiveButton.textSize = 14f
         }
 
@@ -276,11 +282,11 @@ class PlaylistDetailsFragment : Fragment(R.layout.fragment_playlist_details) {
 
     private fun showDeleteTrackDialog(track: Track) {
         val dialog = MaterialAlertDialogBuilder(requireContext())
-            .setMessage("Хотите удалить трек?")
-            .setNegativeButton("НЕТ") { dialog, _ ->
+            .setMessage(getString(R.string.delete_track_confirm))
+            .setNegativeButton(getString(R.string.no)) { dialog, _ ->
                 dialog.dismiss()
             }
-            .setPositiveButton("ДА") { dialog, _ ->
+            .setPositiveButton(getString(R.string.yes)) { dialog, _ ->
                 viewModel.removeTrack(track.trackId)
                 dialog.dismiss()
             }
@@ -288,20 +294,22 @@ class PlaylistDetailsFragment : Fragment(R.layout.fragment_playlist_details) {
             .create()
 
         dialog.setOnShowListener {
-            dialog.window?.setBackgroundDrawable(ColorDrawable(Color.WHITE))
+            dialog.window?.setBackgroundDrawable(
+                ColorDrawable(ContextCompat.getColor(requireContext(), R.color.dialog_background_white))
+            )
 
             val messageView = dialog.findViewById<TextView>(android.R.id.message)
             messageView?.let {
-                it.setTextColor(Color.parseColor("#1A1B22"))
+                it.setTextColor(ContextCompat.getColor(requireContext(), R.color.dialog_text_dark))
                 it.textSize = 14f
             }
 
             val negativeButton = dialog.getButton(AlertDialog.BUTTON_NEGATIVE)
-            negativeButton.setTextColor(Color.parseColor("#3772E7"))
+            negativeButton.setTextColor(ContextCompat.getColor(requireContext(), R.color.dialog_button_blue))
             negativeButton.textSize = 14f
 
             val positiveButton = dialog.getButton(AlertDialog.BUTTON_POSITIVE)
-            positiveButton.setTextColor(Color.parseColor("#3772E7"))
+            positiveButton.setTextColor(ContextCompat.getColor(requireContext(), R.color.dialog_button_blue))
             positiveButton.textSize = 14f
         }
 
@@ -368,7 +376,7 @@ class PlaylistDetailsFragment : Fragment(R.layout.fragment_playlist_details) {
 
         binding.shareButton.setOnClickListener {
             if (state.tracks.isEmpty()) {
-                showToast("В этом плейлисте нет списка треков, которым можно поделиться")
+                showToast(getString(R.string.share_playlist_empty))
             } else {
                 val shareText = getShareText(state.playlist, state.tracks)
                 sharePlaylist(shareText)

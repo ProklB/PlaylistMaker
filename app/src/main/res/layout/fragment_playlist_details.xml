@@ -38,14 +38,14 @@
                     android:id="@+id/playlistName"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:textAppearance="@style/trackNameText"
+                    android:textAppearance="@style/playlistTrackNameText"
                     android:gravity="start" />
 
                 <TextView
                     android:id="@+id/playlistDescription"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:textAppearance="@style/trackInfoText"
+                    android:textAppearance="@style/playlistTrackInfoText"
                     android:gravity="start"
                     android:layout_marginTop="8dp" />
 
@@ -59,13 +59,13 @@
                         android:id="@+id/playlistDuration"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:textAppearance="@style/trackInfoText" />
+                        android:textAppearance="@style/playlistTrackInfoText" />
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text=" • "
-                        android:textAppearance="@style/trackInfoText"
+                        android:textAppearance="@style/playlistTrackInfoText"
                         android:layout_marginStart="4dp"
                         android:layout_marginEnd="4dp" />
 
@@ -73,7 +73,7 @@
                         android:id="@+id/trackCount"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:textAppearance="@style/trackInfoText" />
+                        android:textAppearance="@style/playlistTrackInfoText" />
 
                 </LinearLayout>
 

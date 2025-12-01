@@ -14,8 +14,10 @@ class EditPlaylistViewModel(
 
     private val _uiState = MutableLiveData<EditPlaylistState>()
     val uiState: LiveData<EditPlaylistState> = _uiState
+
     private val _playlistLoaded = MutableLiveData<Boolean>()
     val playlistLoaded: LiveData<Boolean> = _playlistLoaded
+
     private var currentPlaylist: Playlist? = null
     private var originalName = ""
     private var originalDescription = ""

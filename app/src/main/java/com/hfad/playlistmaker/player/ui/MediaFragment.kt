@@ -35,6 +35,7 @@ class MediaFragment : Fragment(R.layout.fragment_media) {
     private lateinit var track: Track
     private lateinit var bottomSheetBehavior: BottomSheetBehavior<*>
     private lateinit var playlistsAdapter: PlaylistBottomSheetAdapter
+    private var isBottomSheetShowing = false
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -68,6 +69,17 @@ class MediaFragment : Fragment(R.layout.fragment_media) {
             playlistsAdapter.updatePlaylists(playlists)
         }
 
+        viewModel.isBottomSheetOpen.observe(viewLifecycleOwner) { isOpen ->
+            isBottomSheetShowing = isOpen
+            if (isOpen && bottomSheetBehavior.state != BottomSheetBehavior.STATE_EXPANDED) {
+                binding.root.post {
+                    if (isAdded && isBottomSheetShowing) {
+                        bottomSheetBehavior.state = BottomSheetBehavior.STATE_EXPANDED
+                    }
+                }
+            }
+        }
+
         viewModel.preparePlayer(track.previewUrl)
 
         binding.playButton.setOnClickListener {
@@ -93,14 +105,14 @@ class MediaFragment : Fragment(R.layout.fragment_media) {
         viewModel.addToPlaylistStatus.observe(viewLifecycleOwner) { status ->
             when (status) {
                 is AddToPlaylistStatus.Success -> {
-                    showCustomToast("Добавлено в плейлист ${status.playlistName}")
+                    showCustomToast(getString(R.string.track_added_to_playlist, status.playlistName))
                     hidePlaylistsBottomSheet()
                 }
                 is AddToPlaylistStatus.TrackAlreadyExists -> {
-                    showCustomToast("Трек уже добавлен в плейлист ${status.playlistName}")
+                    showCustomToast(getString(R.string.track_already_in_playlist, status.playlistName))
                 }
                 is AddToPlaylistStatus.Error -> {
-                    showCustomToast("Ошибка при добавлении в плейлист")
+                    showCustomToast(getString(R.string.error_adding_to_playlist))
                 }
             }
         }
@@ -122,6 +134,10 @@ class MediaFragment : Fragment(R.layout.fragment_media) {
                     when (newState) {
                         BottomSheetBehavior.STATE_HIDDEN -> {
                             binding.overlay.visibility = View.GONE
+                            if (isBottomSheetShowing) {
+                                isBottomSheetShowing = false
+                                viewModel.setBottomSheetOpen(false)
+                            }
                         }
                         else -> {
                             binding.overlay.visibility = View.VISIBLE
@@ -131,7 +147,6 @@ class MediaFragment : Fragment(R.layout.fragment_media) {
 
                 override fun onSlide(bottomSheet: View, slideOffset: Float) {
                     if (!isAdded) return
-
                     binding.overlay.alpha = slideOffset.coerceAtLeast(0f)
                 }
             })
@@ -143,11 +158,22 @@ class MediaFragment : Fragment(R.layout.fragment_media) {
     }
 
     private fun showPlaylistsBottomSheet() {
+        if (isBottomSheetShowing) return
+
+        isBottomSheetShowing = true
+        viewModel.setBottomSheetOpen(true)
         viewModel.loadPlaylists()
-        bottomSheetBehavior.state = BottomSheetBehavior.STATE_EXPANDED
+
+        binding.root.postDelayed({
+            if (isAdded && isBottomSheetShowing) {
+                bottomSheetBehavior.state = BottomSheetBehavior.STATE_EXPANDED
+            }
+        }, 50L)
     }
 
     private fun hidePlaylistsBottomSheet() {
+        isBottomSheetShowing = false
+        viewModel.setBottomSheetOpen(false)
         bottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
     }
 
@@ -206,6 +232,7 @@ class MediaFragment : Fragment(R.layout.fragment_media) {
 
         binding.playButton.setImageResource(buttonResource)
     }
+
     private fun observeViewModel() {
         viewModel.playerScreenState.observe(viewLifecycleOwner) { state ->
             updatePlayButton(state.playerState)
@@ -283,6 +310,9 @@ class MediaFragment : Fragment(R.layout.fragment_media) {
 
     override fun onPause() {
         super.onPause()
+        if (isBottomSheetShowing) {
+            hidePlaylistsBottomSheet()
+        }
         val currentState = viewModel.playerScreenState.value
         if (currentState?.playerState == PlayerState.PLAYING) {
             viewModel.playPause()
@@ -291,6 +321,7 @@ class MediaFragment : Fragment(R.layout.fragment_media) {
 
     override fun onDestroyView() {
         super.onDestroyView()
+        viewModel.setBottomSheetOpen(false)
         _binding = null
     }
 

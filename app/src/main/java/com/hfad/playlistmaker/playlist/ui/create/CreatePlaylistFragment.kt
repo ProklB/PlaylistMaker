@@ -113,7 +113,7 @@ class CreatePlaylistFragment : Fragment() {
     }
 
     private fun showErrorMessage() {
-        showCustomToast("Ошибка при создании плейлиста")
+        showCustomToast(getString(R.string.create_playlist_error))
     }
 
     private fun observeViewModel() {
@@ -173,9 +173,9 @@ class CreatePlaylistFragment : Fragment() {
     private fun showSuccessMessage() {
         val playlistName = viewModel.uiState.value?.name ?: ""
         val message = if (playlistName.isNotEmpty()) {
-            "Плейлист \"$playlistName\" создан"
+            getString(R.string.playlist_created_with_name, playlistName)
         } else {
-            "Плейлист создан"
+            getString(R.string.playlist_created)
         }
 
         showCustomToast(message)

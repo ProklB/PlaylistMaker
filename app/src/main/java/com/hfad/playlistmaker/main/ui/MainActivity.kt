@@ -1,6 +1,7 @@
 package com.hfad.playlistmaker.main.ui
 
 import android.os.Bundle
+import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
@@ -26,10 +27,6 @@ class MainActivity : AppCompatActivity() {
 
         setupNavigation()
         setupEdgeToEdge()
-    }
-
-    private fun enableEdgeToEdge() {
-        androidx.core.view.WindowCompat.setDecorFitsSystemWindows(window, false)
     }
 
     private fun setupEdgeToEdge() {
