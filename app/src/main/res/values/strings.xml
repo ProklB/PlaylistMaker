@@ -94,4 +94,9 @@
     <string name="track_added_to_playlist">Добавлено в плейлист %s</string>
     <string name="track_already_in_playlist">Трек уже добавлен в плейлист %s</string>
     <string name="error_adding_to_playlist">Ошибка при добавлении в плейлист</string>
+
+    <string name="track_single">трек</string>
+    <string name="track_plural_2_4">трека</string>
+    <string name="track_plural_5_more">треков</string>
+
 </resources>

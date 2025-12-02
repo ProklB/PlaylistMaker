@@ -1,5 +1,7 @@
 package com.hfad.playlistmaker.playlist.data.repository
 
+import android.content.Context
+import com.hfad.playlistmaker.R
 import com.google.gson.Gson
 import com.hfad.playlistmaker.data.db.PlaylistEntity
 import com.hfad.playlistmaker.data.db.PlaylistTrackEntity
@@ -15,7 +17,8 @@ import kotlinx.coroutines.flow.map
 class PlaylistRepositoryImpl(
     private val playlistsDao: PlaylistsDao,
     private val playlistTracksDao: PlaylistTracksDao,
-    private val gson: Gson
+    private val gson: Gson,
+    private val context: Context
 ) : PlaylistRepository {
 
     override suspend fun addTrackToPlaylist(track: Track, playlist: Playlist): Boolean {
@@ -182,11 +185,11 @@ class PlaylistRepositoryImpl(
         }
 
         val trackCountText = when (playlist.trackCount) {
-            1 -> "[01] трек"
-            in 2..4 -> "[${String.format("%02d", playlist.trackCount)}] трека"
-            else -> "[${String.format("%02d", playlist.trackCount)}] треков"
+            1 -> context.getString(R.string.track_single)
+            in 2..4 -> context.getString(R.string.track_plural_2_4)
+            else -> context.getString(R.string.track_plural_5_more)
         }
-        stringBuilder.append(trackCountText)
+        stringBuilder.append("[${String.format("%02d", playlist.trackCount)}] $trackCountText")
         stringBuilder.append("\n\n")
 
         tracks.forEachIndexed { index, track ->
