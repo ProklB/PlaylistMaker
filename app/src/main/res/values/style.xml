@@ -41,6 +41,10 @@
         <item name="android:textColor">@color/text_trackname</item>
     </style>
 
+    <style name="menuPlaylistText" parent="trackNameTextFont">
+        <item name="android:textColor">@color/text_textview</item>
+    </style>
+
     <style name="trackNameText">
         <item name="android:fontFamily">@font/ys_display_medium</item>
         <item name="android:textSize">22sp</item>
@@ -51,6 +55,14 @@
         <item name="android:fontFamily">@font/ys_display_regular</item>
         <item name="android:textSize">11sp</item>
         <item name="android:textColor">@color/text_trackinfo</item>
+    </style>
+
+    <style name="playlistTrackNameText" parent="trackNameText">
+        <item name="android:textColor">@color/icon_button</item>
+    </style>
+
+    <style name="playlistTrackInfoText" parent="playlistTrackNameText">
+        <item name="android:textSize">14sp</item>
     </style>
 
     <style name="trackInfoText" parent="trackNameText">
@@ -144,6 +156,31 @@
     <style name="RoundedCorners" parent="">
         <item name="cornerFamily">rounded</item>
         <item name="cornerSize">8dp</item>
+    </style>
+
+    <style name="CustomAlertDialog" parent="ThemeOverlay.Material3.MaterialAlertDialog">
+        <item name="android:windowBackground">@android:color/white</item>
+        <item name="materialAlertDialogBodyTextStyle">@style/CustomAlertDialogText</item>
+        <item name="buttonBarPositiveButtonStyle">@style/CustomAlertDialogButton</item>
+        <item name="buttonBarNegativeButtonStyle">@style/CustomAlertDialogButton</item>
+    </style>
+
+    <style name="CustomAlertDialogText" parent="MaterialAlertDialog.Material3.Body.Text">
+        <item name="android:textColor">#1A1B22</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:fontFamily">@font/ys_display_regular</item>
+    </style>
+
+    <style name="CustomAlertDialogButton">
+        <item name="android:textColor">#3772E7</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:fontFamily">@font/ys_display_medium</item>
+    </style>
+
+    <style name="CustomAlertDialogTitle" parent="MaterialAlertDialog.Material3.Title.Text">
+        <item name="android:textColor">#1A1B22</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:fontFamily">@font/ys_display_medium</item>
     </style>
 
 </resources>

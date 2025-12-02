@@ -1,6 +1,5 @@
-package com.hfad.playlistmaker.playlist.ui.create
+package com.hfad.playlistmaker.playlist.ui.edit
 
-import android.app.AlertDialog
 import android.net.Uri
 import android.os.Bundle
 import android.text.Editable
@@ -10,7 +9,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import android.widget.Toast
-import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.net.toUri
 import androidx.fragment.app.Fragment
@@ -26,13 +24,14 @@ import java.util.Date
 import java.util.Locale
 import android.view.Gravity
 import android.widget.LinearLayout
+import androidx.activity.OnBackPressedCallback
 import androidx.core.content.ContextCompat
 
-class CreatePlaylistFragment : Fragment() {
+class EditPlaylistFragment : Fragment() {
 
     private var _binding: FragmentCreatePlaylistBinding? = null
     private val binding get() = _binding!!
-    private val viewModel: CreatePlaylistViewModel by viewModel()
+    private val viewModel: EditPlaylistViewModel by viewModel()
 
     private val pickImage = registerForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
         uri?.let {
@@ -40,12 +39,6 @@ class CreatePlaylistFragment : Fragment() {
             copiedUri?.let { copied ->
                 viewModel.onCoverSelected(copied.toString())
             }
-        }
-    }
-
-    private val backPressedCallback = object : OnBackPressedCallback(true) {
-        override fun handleOnBackPressed() {
-            handleBackPress()
         }
     }
 
@@ -60,17 +53,36 @@ class CreatePlaylistFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        _binding = FragmentCreatePlaylistBinding.bind(view)
 
-        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, backPressedCallback)
+        requireActivity().onBackPressedDispatcher.addCallback(
+            viewLifecycleOwner,
+            backPressedCallback
+        )
+
+        val playlistId = arguments?.getLong("playlist_id", -1L) ?: -1L
+        if (playlistId == -1L) {
+            findNavController().navigateUp()
+            return
+        }
+
+        viewModel.loadPlaylist(playlistId)
 
         setupToolbar()
         setupViews()
         observeViewModel()
     }
 
+    private val backPressedCallback = object : OnBackPressedCallback(true) {
+        override fun handleOnBackPressed() {
+            findNavController().navigateUp()
+        }
+    }
+
     private fun setupToolbar() {
+        binding.toolbar.title = getString(R.string.edit_playlist)
         binding.toolbar.setNavigationOnClickListener {
-            handleBackPress()
+            findNavController().navigateUp()
         }
     }
 
@@ -95,10 +107,11 @@ class CreatePlaylistFragment : Fragment() {
             }
         })
 
+        binding.createButton.text = getString(R.string.save)
         binding.createButton.setOnClickListener {
             binding.createButton.isEnabled = false
 
-            viewModel.createPlaylist { success ->
+            viewModel.savePlaylist { success ->
                 activity?.runOnUiThread {
                     if (success) {
                         showSuccessMessage()
@@ -113,7 +126,7 @@ class CreatePlaylistFragment : Fragment() {
     }
 
     private fun showErrorMessage() {
-        showCustomToast(getString(R.string.create_playlist_error))
+        showCustomToast(getString(R.string.save_playlist_error))
     }
 
     private fun observeViewModel() {
@@ -124,11 +137,11 @@ class CreatePlaylistFragment : Fragment() {
             if (binding.descriptionEditText.text?.toString() != state.description) {
                 binding.descriptionEditText.setText(state.description)
             }
-            binding.createButton.isEnabled = state.isCreateButtonEnabled
+            binding.createButton.isEnabled = state.isSaveButtonEnabled
             binding.createButton.setBackgroundColor(
                 ContextCompat.getColor(
                     requireContext(),
-                    if (state.isCreateButtonEnabled) R.color.create_playlist_button_activ else R.color.create_playlist_button_inactiv
+                    if (state.isSaveButtonEnabled) R.color.create_playlist_button_activ else R.color.create_playlist_button_inactiv
                 )
             )
 
@@ -136,6 +149,12 @@ class CreatePlaylistFragment : Fragment() {
                 loadCoverImage(coverPath)
             } ?: run {
                 binding.coverImage.setImageResource(R.drawable.placeholder_newlist)
+            }
+        }
+
+        viewModel.playlistLoaded.observe(viewLifecycleOwner) { loaded ->
+            if (!loaded) {
+                findNavController().navigateUp()
             }
         }
     }
@@ -173,9 +192,9 @@ class CreatePlaylistFragment : Fragment() {
     private fun showSuccessMessage() {
         val playlistName = viewModel.uiState.value?.name ?: ""
         val message = if (playlistName.isNotEmpty()) {
-            getString(R.string.playlist_created_with_name, playlistName)
+            getString(R.string.playlist_saved_with_name, playlistName)
         } else {
-            getString(R.string.playlist_created)
+            getString(R.string.playlist_saved)
         }
 
         showCustomToast(message)
@@ -209,32 +228,9 @@ class CreatePlaylistFragment : Fragment() {
         }
     }
 
-    private fun handleBackPress() {
-        if (viewModel.hasUnsavedChanges()) {
-            showUnsavedChangesDialog()
-        } else {
-            findNavController().navigateUp()
-        }
-    }
-
-    private fun showUnsavedChangesDialog() {
-        AlertDialog.Builder(requireContext())
-            .setTitle("Завершить создание плейлиста?")
-            .setMessage("Все несохраненные данные будут потеряны")
-            .setPositiveButton("Завершить") { _, _ ->
-                backPressedCallback.isEnabled = false
-                findNavController().navigateUp()
-            }
-            .setNegativeButton("Отмена") { dialog, _ ->
-                dialog.dismiss()
-            }
-            .setCancelable(false)
-            .show()
-    }
-
     override fun onDestroyView() {
         super.onDestroyView()
-        backPressedCallback.remove()
+        backPressedCallback.remove()  // Не забудьте удалить callback
         _binding = null
     }
 }

@@ -17,18 +17,27 @@ class TrackViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
     private val trackTimeTextView: TextView = itemView.findViewById(R.id.trackTimeTextView)
     private var artworkImageView: ImageView = itemView.findViewById(R.id.artworkImageView)
 
-    fun bind(model: Track, onClick: (Track) -> Unit) {
+    fun bind(model: Track, onClick: (Track) -> Unit, onLongClick: ((Track) -> Unit)? = null) {
         tracknameTextView.text = model.trackName
         artistNameTextView.text = model.artistName
         trackTimeTextView.text = SimpleDateFormat("mm:ss", Locale.getDefault())
             .format(model.trackTimeMillis)
 
-        Glide.with(itemView.context)
-            .load(model.artworkUrl100)
-            .centerCrop()
-            .placeholder(R.drawable.placeholder)
-            .into(artworkImageView)
+        if (model.artworkUrl100.isNotEmpty()) {
+            Glide.with(itemView.context)
+                .load(model.artworkUrl100)
+                .centerCrop()
+                .placeholder(R.drawable.placeholder)
+                .into(artworkImageView)
+        } else {
+            artworkImageView.setImageResource(R.drawable.placeholder)
+        }
 
         itemView.setOnClickListener { onClick(model) }
+
+        itemView.setOnLongClickListener {
+            onLongClick?.invoke(model)
+            true
+        }
     }
 }

@@ -1,8 +1,12 @@
 package com.hfad.playlistmaker.main.ui
 
 import android.os.Bundle
+import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.isVisible
+import androidx.core.view.updatePadding
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupWithNavController
@@ -15,10 +19,32 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        enableEdgeToEdge()
+
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
         setupNavigation()
+        setupEdgeToEdge()
+    }
+
+    private fun setupEdgeToEdge() {
+        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { view, insets ->
+            val statusBar = insets.getInsets(WindowInsetsCompat.Type.statusBars())
+            val navigationBar = insets.getInsets(WindowInsetsCompat.Type.navigationBars())
+
+            view.updatePadding(
+                top = statusBar.top,
+                bottom = navigationBar.bottom
+            )
+
+            binding.bottomNavigation.updatePadding(
+                bottom = navigationBar.bottom
+            )
+
+            insets
+        }
     }
 
     private fun setupNavigation() {
@@ -48,4 +74,3 @@ class MainActivity : AppCompatActivity() {
         }
     }
 }
-
