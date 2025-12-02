@@ -192,9 +192,9 @@ class EditPlaylistFragment : Fragment() {
     private fun showSuccessMessage() {
         val playlistName = viewModel.uiState.value?.name ?: ""
         val message = if (playlistName.isNotEmpty()) {
-            "Плейлист \"$playlistName\" сохранен"
+            getString(R.string.playlist_saved_with_name, playlistName)
         } else {
-            "Плейлист сохранен"
+            getString(R.string.playlist_saved)
         }
 
         showCustomToast(message)

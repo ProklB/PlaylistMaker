@@ -167,10 +167,6 @@ class PlaylistRepositoryImpl(
     }
 
     private fun formatShareText(playlist: Playlist, tracks: List<Track>): String {
-        if (tracks.isEmpty()) {
-            return "${playlist.name}\nПлейлист пуст"
-        }
-
         val stringBuilder = StringBuilder()
 
         stringBuilder.append(playlist.name)
@@ -179,6 +175,10 @@ class PlaylistRepositoryImpl(
         playlist.description?.let { description ->
             stringBuilder.append(description)
             stringBuilder.append("\n")
+        }
+
+        if (tracks.isEmpty()) {
+            return stringBuilder.toString()
         }
 
         val trackCountText = when (playlist.trackCount) {
