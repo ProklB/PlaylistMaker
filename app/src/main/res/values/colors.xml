@@ -57,5 +57,13 @@
     <color name="create_playlist_button_inactiv">#AEAFB4</color>
     <color name="create_playlist_button_activ">#3772E7</color>
 
+    <color name="divider_color">#1AFFFFFF</color>
+    <color name="error_color">#FFFF3B30</color>
+
+    <color name="playlist_details_background">#E6E8EB</color>
+
+    <color name="dialog_text_dark">#1A1B22</color>
+    <color name="dialog_button_blue">#3772E7</color>
+    <color name="dialog_background_white">#FFFFFF</color>
 
 </resources>

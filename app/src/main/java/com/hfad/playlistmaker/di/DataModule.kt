@@ -83,7 +83,7 @@ val dataModule = module {
     }
 
     factory<PlaylistRepository> {
-        PlaylistRepositoryImpl(get(), get(), get())
+        PlaylistRepositoryImpl(get(), get(), get(), androidContext())
     }
 
     single {

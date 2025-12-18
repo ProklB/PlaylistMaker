@@ -1,5 +1,7 @@
 package com.hfad.playlistmaker.playlist.data.repository
 
+import android.content.Context
+import com.hfad.playlistmaker.R
 import com.google.gson.Gson
 import com.hfad.playlistmaker.data.db.PlaylistEntity
 import com.hfad.playlistmaker.data.db.PlaylistTrackEntity
@@ -9,12 +11,14 @@ import com.hfad.playlistmaker.playlist.domain.models.Playlist
 import com.hfad.playlistmaker.playlist.domain.repository.PlaylistRepository
 import com.hfad.playlistmaker.search.domain.models.Track
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 
 class PlaylistRepositoryImpl(
     private val playlistsDao: PlaylistsDao,
     private val playlistTracksDao: PlaylistTracksDao,
-    private val gson: Gson
+    private val gson: Gson,
+    private val context: Context
 ) : PlaylistRepository {
 
     override suspend fun addTrackToPlaylist(track: Track, playlist: Playlist): Boolean {
@@ -54,9 +58,55 @@ class PlaylistRepositoryImpl(
 
     override suspend fun getPlaylistTracks(playlist: Playlist): List<Track> {
         return if (playlist.trackIds.isNotEmpty()) {
-            playlistTracksDao.getTracksByIds(playlist.trackIds).map { it.toTrack() }
+            val tracks = playlistTracksDao.getTracksByIds(playlist.trackIds)
+            val trackMap = tracks.associateBy { it.trackId }
+            playlist.trackIds.mapNotNull { trackId ->
+                trackMap[trackId]?.toTrack()
+            }.reversed()
         } else {
             emptyList()
+        }
+    }
+
+    override suspend fun getPlaylistById(playlistId: Long): Playlist? {
+        val entity = playlistsDao.getPlaylistById(playlistId)
+        return entity?.toPlaylist()
+    }
+
+    override suspend fun removeTrackFromPlaylist(trackId: Int, playlist: Playlist) {
+        val updatedTrackIds = playlist.trackIds.toMutableList().apply {
+            remove(trackId)
+        }
+
+        val updatedPlaylist = playlist.copy(
+            trackIds = updatedTrackIds,
+            trackCount = updatedTrackIds.size
+        )
+
+        playlistsDao.insertPlaylist(updatedPlaylist.toEntity())
+        cleanupOrphanedTracks(trackId)
+    }
+
+    override suspend fun deletePlaylist(playlistId: Long) {
+        val playlistEntity = playlistsDao.getPlaylistById(playlistId)
+        playlistsDao.deletePlaylist(playlistId)
+        playlistEntity?.let { entity ->
+            val trackIds = gson.fromJson(entity.trackIds, Array<Int>::class.java).toList()
+            for (trackId in trackIds) {
+                cleanupOrphanedTracks(trackId)
+            }
+        }
+    }
+
+    private suspend fun cleanupOrphanedTracks(trackId: Int) {
+        val allPlaylists = playlistsDao.getAllPlaylists().first()
+        val isTrackUsed = allPlaylists.any { playlistEntity ->
+            val trackIds = gson.fromJson(playlistEntity.trackIds, Array<Int>::class.java).toList()
+            trackIds.contains(trackId)
+        }
+
+        if (!isTrackUsed) {
+            playlistTracksDao.deleteTrack(trackId)
         }
     }
 
@@ -114,4 +164,49 @@ class PlaylistRepositoryImpl(
         )
     }
 
+    override suspend fun getShareText(playlist: Playlist): String {
+        val tracks = getPlaylistTracks(playlist)
+        return formatShareText(playlist, tracks)
+    }
+
+    private fun formatShareText(playlist: Playlist, tracks: List<Track>): String {
+        val stringBuilder = StringBuilder()
+
+        stringBuilder.append(playlist.name)
+        stringBuilder.append("\n")
+
+        playlist.description?.let { description ->
+            stringBuilder.append(description)
+            stringBuilder.append("\n")
+        }
+
+        if (tracks.isEmpty()) {
+            return stringBuilder.toString()
+        }
+
+        val trackCountText = when (playlist.trackCount) {
+            1 -> context.getString(R.string.track_single)
+            in 2..4 -> context.getString(R.string.track_plural_2_4)
+            else -> context.getString(R.string.track_plural_5_more)
+        }
+        stringBuilder.append("[${String.format("%02d", playlist.trackCount)}] $trackCountText")
+        stringBuilder.append("\n\n")
+
+        tracks.forEachIndexed { index, track ->
+            val trackNumber = index + 1
+            val duration = formatTrackDuration(track.trackTimeMillis)
+
+            stringBuilder.append("${String.format("%02d", trackNumber)}. ${track.artistName} - ${track.trackName} ($duration)")
+            stringBuilder.append("\n")
+        }
+
+        return stringBuilder.toString()
+    }
+
+    private fun formatTrackDuration(millis: Long): String {
+        val seconds = millis / 1000
+        val minutes = seconds / 60
+        val remainingSeconds = seconds % 60
+        return String.format("%02d:%02d", minutes, remainingSeconds)
+    }
 }

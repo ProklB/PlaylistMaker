@@ -32,6 +32,9 @@ class MediaViewModel(
     private val _playlists = MutableLiveData<List<Playlist>>()
     val playlists: LiveData<List<Playlist>> = _playlists
 
+    private val _isBottomSheetOpen = MutableLiveData(false)
+    val isBottomSheetOpen: LiveData<Boolean> = _isBottomSheetOpen
+
     private var currentTrack: Track? = null
     private var progressUpdateJob: Job? = null
 
@@ -56,8 +59,11 @@ class MediaViewModel(
 
     fun setTrack(track: Track) {
         currentTrack = track
-        updatePlayerScreenState { currentState ->
-            currentState.copy(isFavorite = track.isFavorite)
+        viewModelScope.launch {
+            val isFavorite = favoriteTracksInteractor.isTrackInFavorites(track.trackId)
+            updatePlayerScreenState { currentState ->
+                currentState.copy(isFavorite = isFavorite)
+            }
         }
     }
 
@@ -70,7 +76,6 @@ class MediaViewModel(
     }
 
     fun preparePlayer(previewUrl: String) {
-        playerInteractor.preparePlayer(previewUrl)
         playerInteractor.setOnPreparedListener {
             updatePlayerScreenState { currentState ->
                 currentState.copy(playerState = PlayerState.PREPARED)
@@ -87,28 +92,31 @@ class MediaViewModel(
             stopProgressUpdates()
         }
 
-        updatePlayerScreenState { currentState ->
-            currentState.copy(playerState = PlayerState.DEFAULT)
-        }
+        playerInteractor.preparePlayer(previewUrl)
     }
 
     fun playPause() {
-        when (playerInteractor.getPlayerState()) {
+        val currentPlayerState = playerInteractor.getPlayerState()
+
+        when (currentPlayerState) {
             PlayerState.PLAYING -> {
                 playerInteractor.pausePlayer()
-                updatePlayerScreenState { currentState ->
-                    currentState.copy(playerState = PlayerState.PAUSED)
-                }
-                stopProgressUpdates()
+                _playerScreenState.value = _playerScreenState.value?.copy(
+                    playerState = PlayerState.PAUSED
+                ) ?: PlayerScreenState(playerState = PlayerState.PAUSED)
             }
             PlayerState.PREPARED, PlayerState.PAUSED -> {
                 playerInteractor.startPlayer()
-                updatePlayerScreenState { currentState ->
-                    currentState.copy(playerState = PlayerState.PLAYING)
-                }
+                _playerScreenState.value = _playerScreenState.value?.copy(
+                    playerState = PlayerState.PLAYING
+                ) ?: PlayerScreenState(playerState = PlayerState.PLAYING)
                 startProgressUpdates()
             }
-            else -> {}
+            PlayerState.DEFAULT -> {
+                currentTrack?.previewUrl?.let { url ->
+                    preparePlayer(url)
+                }
+            }
         }
     }
 
@@ -128,6 +136,8 @@ class MediaViewModel(
     }
 
     private fun startProgressUpdates() {
+        if (_isBottomSheetOpen.value == true) return
+
         stopProgressUpdates()
         progressUpdateJob = viewModelScope.launch {
             while (isActive) {
@@ -174,6 +184,15 @@ class MediaViewModel(
             } catch (e: Exception) {
                 _addToPlaylistStatus.postValue(AddToPlaylistStatus.Error)
             }
+        }
+    }
+
+    fun setBottomSheetOpen(isOpen: Boolean) {
+        _isBottomSheetOpen.value = isOpen
+        if (isOpen) {
+            stopProgressUpdates()
+        } else if (playerInteractor.getPlayerState() == PlayerState.PLAYING) {
+            startProgressUpdates()
         }
     }
 

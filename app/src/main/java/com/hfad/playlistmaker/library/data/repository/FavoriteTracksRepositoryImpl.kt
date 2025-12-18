@@ -12,7 +12,10 @@ class FavoriteTracksRepositoryImpl(
 ) : FavoriteTracksRepository {
 
     override suspend fun addTrackToFavorites(track: Track) {
-        favoriteTracksDao.addTrackToFavorites(track.toEntity())
+        val existingTrack = favoriteTracksDao.getTrackByTrackId(track.trackId)
+        if (existingTrack == null) {
+            favoriteTracksDao.addTrackToFavorites(track.toEntity())
+        }
     }
 
     override suspend fun removeTrackFromFavorites(track: Track) {
@@ -24,6 +27,10 @@ class FavoriteTracksRepositoryImpl(
         return favoriteTracksDao.getAllFavoriteTracks().map { entities ->
             entities.map { it.toTrack() }
         }
+    }
+
+    override suspend fun isTrackInFavorites(trackId: Int): Boolean {
+        return favoriteTracksDao.getTrackByTrackId(trackId) != null
     }
 
     private fun Track.toEntity(): FavoriteTrackEntity {
