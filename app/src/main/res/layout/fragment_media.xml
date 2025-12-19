@@ -75,7 +75,7 @@
             android:gravity="start"
             app:layout_constraintEnd_toStartOf="@+id/guidelineRight"
             app:layout_constraintStart_toStartOf="@id/guidelineLeft"
-            app:layout_constraintBottom_toTopOf="@id/playButton"
+            app:layout_constraintBottom_toTopOf="@id/playbackButton"
             android:layout_marginBottom="30dp"
             android:textAppearance="@style/trackInfoText"
             tools:text="Король и шутйййййййййййййййййййййййййййййййййййййййййййййййй"/>
@@ -88,18 +88,18 @@
             android:src="@drawable/button_add"
             android:clickable="true"
             android:focusable="true"
-            app:layout_constraintBottom_toBottomOf="@id/playButton"
+            app:layout_constraintBottom_toBottomOf="@id/playbackButton"
             app:layout_constraintHorizontal_chainStyle="packed"
             app:layout_constraintStart_toStartOf="@id/guidelineLeft"
-            app:layout_constraintTop_toTopOf="@id/playButton" />
+            app:layout_constraintTop_toTopOf="@id/playbackButton" />
 
-        <ImageButton
-            android:id="@+id/playButton"
+        <com.hfad.playlistmaker.player.ui.custom.PlaybackButtonView
+            android:id="@+id/playbackButton"
             android:layout_width="100dp"
             android:layout_height="100dp"
             android:background="@drawable/round_button"
-            android:src="@drawable/button_play"
-            android:enabled="false"
+            app:playIcon="@drawable/button_play"
+            app:pauseIcon="@drawable/button_pause"
             app:layout_constraintBottom_toTopOf="@id/progressText"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -111,9 +111,9 @@
             android:layout_height="51dp"
             android:background="@drawable/round_button"
             android:src="@drawable/button_like_gray"
-            app:layout_constraintBottom_toBottomOf="@id/playButton"
+            app:layout_constraintBottom_toBottomOf="@id/playbackButton"
             app:layout_constraintEnd_toEndOf="@id/guidelineRight"
-            app:layout_constraintTop_toTopOf="@id/playButton" />
+            app:layout_constraintTop_toTopOf="@id/playbackButton" />
 
     <TextView
         android:id="@+id/progressText"

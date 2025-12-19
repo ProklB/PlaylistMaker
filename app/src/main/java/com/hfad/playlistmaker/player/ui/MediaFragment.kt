@@ -47,7 +47,7 @@ class MediaFragment : Fragment(R.layout.fragment_media) {
         }
 
         if (track.previewUrl.isBlank()) {
-            binding.playButton.isEnabled = false
+            binding.playbackButton.isEnabled = false
             return
         }
 
@@ -82,7 +82,7 @@ class MediaFragment : Fragment(R.layout.fragment_media) {
 
         viewModel.preparePlayer(track.previewUrl)
 
-        binding.playButton.setOnClickListener {
+        binding.playbackButton.setOnClickListener {
             viewModel.playPause()
         }
 
@@ -216,21 +216,11 @@ class MediaFragment : Fragment(R.layout.fragment_media) {
     }
 
     private fun updatePlayButton(state: PlayerState) {
-        binding.playButton.isEnabled = state != PlayerState.DEFAULT
+        val isEnabled = state != PlayerState.DEFAULT
+        binding.playbackButton.isEnabled = isEnabled
 
-        val buttonResource = when (state) {
-            PlayerState.PLAYING -> {
-                R.drawable.button_pause
-            }
-            PlayerState.PREPARED, PlayerState.PAUSED -> {
-                R.drawable.button_play
-            }
-            PlayerState.DEFAULT -> {
-                R.drawable.button_play
-            }
-        }
-
-        binding.playButton.setImageResource(buttonResource)
+        val isPlaying = state == PlayerState.PLAYING
+        binding.playbackButton.setPlayingState(isPlaying)
     }
 
     private fun observeViewModel() {
