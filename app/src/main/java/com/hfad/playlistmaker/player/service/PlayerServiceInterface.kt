@@ -14,4 +14,8 @@ interface PlayerServiceInterface {
     fun hideNotification()
     fun getPlayerStateFlow(): StateFlow<PlayerState>
     fun getCurrentPositionFlow(): StateFlow<Int>
+
+    companion object {
+        const val PLAY_DELAY_MS = 50L
+    }
 }

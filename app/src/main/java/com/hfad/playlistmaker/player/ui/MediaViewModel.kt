@@ -13,6 +13,7 @@ import com.hfad.playlistmaker.playlist.domain.interactor.PlaylistInteractor
 import com.hfad.playlistmaker.playlist.domain.models.Playlist
 import com.hfad.playlistmaker.search.domain.models.Track
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 class MediaViewModel(
@@ -20,7 +21,6 @@ class MediaViewModel(
     private val playlistInteractor: PlaylistInteractor
 ) : ViewModel() {
     private val _addToPlaylistStatus = MutableLiveData<AddToPlaylistStatus>()
-    val addToPlaylistStatus: LiveData<AddToPlaylistStatus> = _addToPlaylistStatus
 
     private val _playerScreenState = MutableLiveData<PlayerScreenState>()
     val playerScreenState: LiveData<PlayerScreenState> = _playerScreenState
@@ -29,7 +29,6 @@ class MediaViewModel(
     val playlists: LiveData<List<Playlist>> = _playlists
 
     private val _isBottomSheetOpen = MutableLiveData(false)
-    val isBottomSheetOpen: LiveData<Boolean> = _isBottomSheetOpen
 
     private var currentTrack: Track? = null
     private var playerService: PlayerServiceInterface? = null
@@ -94,7 +93,10 @@ class MediaViewModel(
                 hideNotificationIfNeeded()
             }
             PlayerState.PREPARED, PlayerState.PAUSED -> {
-                service.play()
+                viewModelScope.launch {
+                    service.play()
+                    delay(PlayerServiceInterface.PLAY_DELAY_MS)
+                }
             }
             PlayerState.DEFAULT -> {
                 currentTrack?.let { track ->

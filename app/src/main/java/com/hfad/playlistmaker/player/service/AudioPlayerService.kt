@@ -4,6 +4,7 @@ import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
+import android.app.Service
 import android.content.Context
 import android.content.Intent
 import android.os.Binder
@@ -23,10 +24,11 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 
-class AudioPlayerService : android.app.Service(), PlayerServiceInterface {
+class AudioPlayerService : Service(), PlayerServiceInterface {
 
     inner class AudioPlayerBinder : Binder() {
         fun getService(): AudioPlayerService = this@AudioPlayerService
@@ -36,28 +38,28 @@ class AudioPlayerService : android.app.Service(), PlayerServiceInterface {
     private val playerRepository: PlayerRepository by inject()
     private var currentTrack: Track? = null
     private val _playerState = MutableStateFlow(PlayerState.DEFAULT)
-    override fun getPlayerStateFlow(): StateFlow<PlayerState> =
-        _playerState.asStateFlow()
+    override fun getPlayerStateFlow(): StateFlow<PlayerState> = _playerState.asStateFlow()
 
     private val _currentPosition = MutableStateFlow(0)
-    override fun getCurrentPositionFlow(): StateFlow<Int> =
-        _currentPosition.asStateFlow()
+    override fun getCurrentPositionFlow(): StateFlow<Int> = _currentPosition.asStateFlow()
     private var progressUpdateJob: Job? = null
-    private val NOTIFICATION_CHANNEL_ID = "audio_player_channel"
-    private val NOTIFICATION_ID = 1
+
     private var isNotificationShowing = false
+
+    private val serviceScope = CoroutineScope(Dispatchers.Main)
+    private var playDelayJob: Job? = null
 
     override fun onCreate() {
         super.onCreate()
         createNotificationChannel()
 
         playerRepository.setOnPreparedListener {
-            _playerState.value = PlayerState.PREPARED
+            _playerState.update { PlayerState.PREPARED }
         }
 
         playerRepository.setOnCompletionListener {
-            _playerState.value = PlayerState.PREPARED
-            _currentPosition.value = 0
+            _playerState.update { PlayerState.PREPARED }
+            _currentPosition.update { 0 }
             stopProgressUpdates()
             hideNotification()
         }
@@ -81,6 +83,7 @@ class AudioPlayerService : android.app.Service(), PlayerServiceInterface {
 
     override fun onDestroy() {
         super.onDestroy()
+        playDelayJob?.cancel()
         playerRepository.releasePlayer()
         stopProgressUpdates()
     }
@@ -92,9 +95,10 @@ class AudioPlayerService : android.app.Service(), PlayerServiceInterface {
 
     override fun play() {
         playerRepository.startPlayer()
-        _playerState.value = PlayerState.PLAYING
+        _playerState.update { PlayerState.PLAYING }
 
-        CoroutineScope(Dispatchers.Main).launch {
+        playDelayJob?.cancel()
+        playDelayJob = serviceScope.launch {
             delay(PLAY_DELAY_MS)
             startProgressUpdates()
         }
@@ -102,8 +106,9 @@ class AudioPlayerService : android.app.Service(), PlayerServiceInterface {
 
     override fun pause() {
         playerRepository.pausePlayer()
-        _playerState.value = PlayerState.PAUSED
+        _playerState.update { PlayerState.PAUSED }
         stopProgressUpdates()
+        playDelayJob?.cancel()
     }
 
     override fun getPlayerState(): PlayerState {
@@ -143,10 +148,10 @@ class AudioPlayerService : android.app.Service(), PlayerServiceInterface {
     private fun startProgressUpdates() {
         stopProgressUpdates()
 
-        progressUpdateJob = CoroutineScope(Dispatchers.Main).launch {
+        progressUpdateJob = serviceScope.launch {
             while (true) {
                 if (_playerState.value == PlayerState.PLAYING) {
-                    _currentPosition.value = playerRepository.getCurrentPosition()
+                    _currentPosition.update { playerRepository.getCurrentPosition() }
                 }
                 delay(PROGRESS_UPDATE_INTERVAL_MS)
             }
@@ -207,5 +212,7 @@ class AudioPlayerService : android.app.Service(), PlayerServiceInterface {
     companion object {
         private const val PLAY_DELAY_MS = 50L
         private const val PROGRESS_UPDATE_INTERVAL_MS = 300L
+        private const val NOTIFICATION_CHANNEL_ID = "audio_player_channel"
+        private const val NOTIFICATION_ID = 1
     }
 }
