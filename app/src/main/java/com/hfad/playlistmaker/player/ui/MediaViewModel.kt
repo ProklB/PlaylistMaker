@@ -5,24 +5,20 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.hfad.playlistmaker.library.domain.interactor.FavoriteTracksInteractor
-import com.hfad.playlistmaker.player.domain.interactor.PlayerInteractor
 import com.hfad.playlistmaker.player.domain.models.PlayerState
+import com.hfad.playlistmaker.player.service.PlayerServiceInterface
 import com.hfad.playlistmaker.player.ui.model.AddToPlaylistStatus
 import com.hfad.playlistmaker.player.ui.model.PlayerScreenState
 import com.hfad.playlistmaker.playlist.domain.interactor.PlaylistInteractor
 import com.hfad.playlistmaker.playlist.domain.models.Playlist
 import com.hfad.playlistmaker.search.domain.models.Track
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 
 class MediaViewModel(
-    private val playerInteractor: PlayerInteractor,
     private val favoriteTracksInteractor: FavoriteTracksInteractor,
     private val playlistInteractor: PlaylistInteractor
 ) : ViewModel() {
-
     private val _addToPlaylistStatus = MutableLiveData<AddToPlaylistStatus>()
     val addToPlaylistStatus: LiveData<AddToPlaylistStatus> = _addToPlaylistStatus
 
@@ -36,25 +32,33 @@ class MediaViewModel(
     val isBottomSheetOpen: LiveData<Boolean> = _isBottomSheetOpen
 
     private var currentTrack: Track? = null
-    private var progressUpdateJob: Job? = null
+    private var playerService: PlayerServiceInterface? = null
+
+    private var playerStateJob: Job? = null
+    private var progressJob: Job? = null
 
     init {
         _playerScreenState.value = PlayerScreenState(
-            playerState = playerInteractor.getPlayerState(),
+            playerState = PlayerState.DEFAULT,
             currentPosition = 0,
             isFavorite = false
         )
-        startProgressUpdates()
+    }
 
-        playerInteractor.setOnCompletionListener {
-            updatePlayerScreenState { currentState ->
-                currentState.copy(
-                    playerState = PlayerState.PREPARED,
-                    currentPosition = 0
-                )
-            }
-            stopProgressUpdates()
-        }
+    fun setPlayerService(service: PlayerServiceInterface) {
+        playerService = service
+        startObservingPlayerState()
+        startObservingProgress()
+
+        _playerScreenState.value = _playerScreenState.value?.copy(
+            playerState = service.getPlayerState()
+        )
+    }
+
+    fun clearPlayerService() {
+        stopObservingPlayerState()
+        stopObservingProgress()
+        playerService = null
     }
 
     fun setTrack(track: Track) {
@@ -76,45 +80,25 @@ class MediaViewModel(
     }
 
     fun preparePlayer(previewUrl: String) {
-        playerInteractor.setOnPreparedListener {
-            updatePlayerScreenState { currentState ->
-                currentState.copy(playerState = PlayerState.PREPARED)
-            }
+        currentTrack?.let { track ->
+            playerService?.preparePlayer(track)
         }
-
-        playerInteractor.setOnCompletionListener {
-            updatePlayerScreenState { currentState ->
-                currentState.copy(
-                    playerState = PlayerState.PREPARED,
-                    currentPosition = 0
-                )
-            }
-            stopProgressUpdates()
-        }
-
-        playerInteractor.preparePlayer(previewUrl)
     }
 
     fun playPause() {
-        val currentPlayerState = playerInteractor.getPlayerState()
+        val service = playerService ?: return
 
-        when (currentPlayerState) {
+        when (service.getPlayerState()) {
             PlayerState.PLAYING -> {
-                playerInteractor.pausePlayer()
-                _playerScreenState.value = _playerScreenState.value?.copy(
-                    playerState = PlayerState.PAUSED
-                ) ?: PlayerScreenState(playerState = PlayerState.PAUSED)
+                service.pause()
+                hideNotificationIfNeeded()
             }
             PlayerState.PREPARED, PlayerState.PAUSED -> {
-                playerInteractor.startPlayer()
-                _playerScreenState.value = _playerScreenState.value?.copy(
-                    playerState = PlayerState.PLAYING
-                ) ?: PlayerScreenState(playerState = PlayerState.PLAYING)
-                startProgressUpdates()
+                service.play()
             }
             PlayerState.DEFAULT -> {
-                currentTrack?.previewUrl?.let { url ->
-                    preparePlayer(url)
+                currentTrack?.let { track ->
+                    service.preparePlayer(track)
                 }
             }
         }
@@ -135,36 +119,55 @@ class MediaViewModel(
         }
     }
 
-    private fun startProgressUpdates() {
-        if (_isBottomSheetOpen.value == true) return
-
-        stopProgressUpdates()
-        progressUpdateJob = viewModelScope.launch {
-            while (isActive) {
-                if (playerInteractor.getPlayerState() == PlayerState.PLAYING) {
-                    updatePlayerScreenState { currentState ->
-                        currentState.copy(currentPosition = playerInteractor.getCurrentPosition())
-                    }
+    private fun startObservingPlayerState() {
+        playerStateJob?.cancel()
+        playerStateJob = viewModelScope.launch {
+            playerService?.getPlayerStateFlow()?.collect { newState ->
+                updatePlayerScreenState { currentState ->
+                    currentState.copy(playerState = newState)
                 }
-                delay(PROGRESS_UPDATE_DELAY)
             }
         }
     }
 
-    private fun stopProgressUpdates() {
-        progressUpdateJob?.cancel()
-        progressUpdateJob = null
+    private fun stopObservingPlayerState() {
+        playerStateJob?.cancel()
+        playerStateJob = null
+    }
+
+    private fun startObservingProgress() {
+        progressJob?.cancel()
+        progressJob = viewModelScope.launch {
+            playerService?.getCurrentPositionFlow()?.collect { position ->
+                if (!(_isBottomSheetOpen.value ?: false)) {
+                    updatePlayerScreenState { currentState ->
+                        currentState.copy(currentPosition = position)
+                    }
+                }
+            }
+        }
+    }
+
+    private fun stopObservingProgress() {
+        progressJob?.cancel()
+        progressJob = null
     }
 
     private fun updatePlayerScreenState(update: (PlayerScreenState) -> PlayerScreenState) {
         val currentState = _playerScreenState.value ?: PlayerScreenState()
-        _playerScreenState.postValue(update(currentState))
+        val newState = update(currentState)
+
+        if (_isBottomSheetOpen.value == true) {
+            _playerScreenState.postValue(newState.copy(currentPosition = currentState.currentPosition))
+        } else {
+            _playerScreenState.postValue(newState)
+        }
     }
 
     override fun onCleared() {
         super.onCleared()
-        stopProgressUpdates()
-        playerInteractor.releasePlayer()
+        stopObservingPlayerState()
+        stopObservingProgress()
     }
 
     fun addTrackToPlaylist(track: Track, playlist: Playlist) {
@@ -190,13 +193,26 @@ class MediaViewModel(
     fun setBottomSheetOpen(isOpen: Boolean) {
         _isBottomSheetOpen.value = isOpen
         if (isOpen) {
-            stopProgressUpdates()
-        } else if (playerInteractor.getPlayerState() == PlayerState.PLAYING) {
-            startProgressUpdates()
+            stopObservingProgress()
+        } else {
+            if (playerService?.getPlayerState() == PlayerState.PLAYING) {
+                startObservingProgress()
+            }
         }
     }
 
-    companion object {
-        private const val PROGRESS_UPDATE_DELAY = 300L
+    fun showNotification() {
+        playerService?.showNotification()
+    }
+
+    fun hideNotification() {
+        playerService?.hideNotification()
+    }
+
+    private fun hideNotificationIfNeeded() {
+        val state = _playerScreenState.value
+        if (state?.playerState != PlayerState.PLAYING) {
+            playerService?.hideNotification()
+        }
     }
 }

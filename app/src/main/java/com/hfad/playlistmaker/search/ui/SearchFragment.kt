@@ -21,6 +21,9 @@ import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import android.content.IntentFilter
+import com.hfad.playlistmaker.utils.NetworkChangeReceiver
+import android.content.BroadcastReceiver
 
 class SearchFragment : Fragment(R.layout.fragment_search) {
 
@@ -39,6 +42,8 @@ class SearchFragment : Fragment(R.layout.fragment_search) {
     private val scope = MainScope()
     private var searchJob: Job? = null
     private val clickDebounceMap = mutableMapOf<Int, Job>()
+
+    private var networkChangeReceiver: BroadcastReceiver? = null
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -200,6 +205,7 @@ private fun showHistoryIfAvailable() {
             resetSearchState()
             showHistoryIfAvailable()
         }
+        registerNetworkReceiver()
     }
 
     private fun setupListeners() {
@@ -306,6 +312,25 @@ private fun showHistoryIfAvailable() {
         imm.hideSoftInputFromWindow(binding.searchEditText.windowToken, 0)
     }
 
+    private fun registerNetworkReceiver() {
+        if (networkChangeReceiver == null) {
+            networkChangeReceiver = NetworkChangeReceiver()
+
+            val filter = IntentFilter().apply {
+                addAction(NetworkChangeReceiver.CONNECTIVITY_ACTION)
+            }
+
+            requireContext().registerReceiver(networkChangeReceiver, filter)
+        }
+    }
+
+    private fun unregisterNetworkReceiver() {
+        networkChangeReceiver?.let {
+            requireContext().unregisterReceiver(it)
+            networkChangeReceiver = null
+        }
+    }
+
     override fun onDestroyView() {
         super.onDestroyView()
         cleanupCoroutines()
@@ -315,6 +340,7 @@ private fun showHistoryIfAvailable() {
     override fun onPause() {
         super.onPause()
         cleanupCoroutines()
+        unregisterNetworkReceiver()
     }
 
     private fun cleanupCoroutines() {

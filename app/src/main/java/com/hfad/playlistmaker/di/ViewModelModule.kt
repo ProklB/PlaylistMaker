@@ -18,7 +18,7 @@ val viewModelModule = module {
     }
 
     viewModel {
-        MediaViewModel(get(), get(), get())
+        MediaViewModel(get(), get())
     }
 
     viewModel {
