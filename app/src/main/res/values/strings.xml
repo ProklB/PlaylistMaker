@@ -99,4 +99,12 @@
     <string name="track_plural_2_4">трека</string>
     <string name="track_plural_5_more">треков</string>
 
+    <string name="no_internet">Отсутствует подключение к интернету</string>
+
+    <!-- AudioPlayerService -->
+    <string name="notification_channel_name">Audio Player</string>
+    <string name="notification_channel_description">Audio playback controls</string>
+    <string name="notification_title">Playlist Maker</string>
+    <string name="exception_no_track_for_notification">No track to show in notification</string>
+
 </resources>

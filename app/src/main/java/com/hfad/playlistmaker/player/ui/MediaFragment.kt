@@ -1,6 +1,13 @@
 package com.hfad.playlistmaker.player.ui
 
+import android.content.BroadcastReceiver
+import android.content.ComponentName
+import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
+import android.content.ServiceConnection
 import android.os.Bundle
+import android.os.IBinder
 import android.view.LayoutInflater
 import androidx.core.view.isVisible
 import android.view.View
@@ -23,10 +30,10 @@ import java.text.SimpleDateFormat
 import java.util.Locale
 import android.widget.TextView
 import android.view.Gravity
-import com.hfad.playlistmaker.player.ui.model.AddToPlaylistStatus
+import com.hfad.playlistmaker.player.service.AudioPlayerService
+import com.hfad.playlistmaker.utils.NetworkChangeReceiver
 
 class MediaFragment : Fragment(R.layout.fragment_media) {
-
     private val viewModel: MediaViewModel by viewModel()
 
     private var _binding: FragmentMediaBinding? = null
@@ -36,6 +43,26 @@ class MediaFragment : Fragment(R.layout.fragment_media) {
     private lateinit var bottomSheetBehavior: BottomSheetBehavior<*>
     private lateinit var playlistsAdapter: PlaylistBottomSheetAdapter
     private var isBottomSheetShowing = false
+    private var networkChangeReceiver: BroadcastReceiver? = null
+
+    private var playerService: AudioPlayerService? = null
+    private var isServiceBound = false
+
+    private val serviceConnection = object : ServiceConnection {
+        override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
+            val binder = service as AudioPlayerService.AudioPlayerBinder
+            playerService = binder.getService()
+            isServiceBound = true
+            viewModel.setPlayerService(playerService!!)
+            viewModel.preparePlayer(track.previewUrl)
+        }
+
+        override fun onServiceDisconnected(name: ComponentName?) {
+            isServiceBound = false
+            playerService = null
+            viewModel.clearPlayerService()
+        }
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -56,31 +83,7 @@ class MediaFragment : Fragment(R.layout.fragment_media) {
         initBottomSheet()
         observeViewModel()
 
-        viewModel.playerScreenState.observe(viewLifecycleOwner) { state ->
-            updatePlayButton(state.playerState)
-            updateFavoriteButton(state.isFavorite)
-            if (state.playerState == PlayerState.PREPARED) {
-                updateProgress(0)
-            }
-            updateProgress(state.currentPosition)
-        }
-
-        viewModel.playlists.observe(viewLifecycleOwner) { playlists ->
-            playlistsAdapter.updatePlaylists(playlists)
-        }
-
-        viewModel.isBottomSheetOpen.observe(viewLifecycleOwner) { isOpen ->
-            isBottomSheetShowing = isOpen
-            if (isOpen && bottomSheetBehavior.state != BottomSheetBehavior.STATE_EXPANDED) {
-                binding.root.post {
-                    if (isAdded && isBottomSheetShowing) {
-                        bottomSheetBehavior.state = BottomSheetBehavior.STATE_EXPANDED
-                    }
-                }
-            }
-        }
-
-        viewModel.preparePlayer(track.previewUrl)
+        bindAudioService()
 
         binding.playbackButton.setOnClickListener {
             viewModel.playPause()
@@ -101,20 +104,21 @@ class MediaFragment : Fragment(R.layout.fragment_media) {
 
         displayTrackInfo(track)
         setupToolbar()
+    }
 
-        viewModel.addToPlaylistStatus.observe(viewLifecycleOwner) { status ->
-            when (status) {
-                is AddToPlaylistStatus.Success -> {
-                    showCustomToast(getString(R.string.track_added_to_playlist, status.playlistName))
-                    hidePlaylistsBottomSheet()
-                }
-                is AddToPlaylistStatus.TrackAlreadyExists -> {
-                    showCustomToast(getString(R.string.track_already_in_playlist, status.playlistName))
-                }
-                is AddToPlaylistStatus.Error -> {
-                    showCustomToast(getString(R.string.error_adding_to_playlist))
-                }
-            }
+    private fun bindAudioService() {
+        val intent = Intent(requireContext(), AudioPlayerService::class.java).apply {
+            putExtra("track", track)
+        }
+        requireContext().bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE)
+    }
+
+    private fun unbindAudioService() {
+        if (isServiceBound) {
+            requireContext().unbindService(serviceConnection)
+            isServiceBound = false
+            playerService = null
+            viewModel.clearPlayerService()
         }
     }
 
@@ -227,10 +231,14 @@ class MediaFragment : Fragment(R.layout.fragment_media) {
         viewModel.playerScreenState.observe(viewLifecycleOwner) { state ->
             updatePlayButton(state.playerState)
             updateFavoriteButton(state.isFavorite)
+
             if (state.playerState == PlayerState.PREPARED) {
                 updateProgress(0)
             }
-            updateProgress(state.currentPosition)
+
+            if (!isBottomSheetShowing) {
+                updateProgress(state.currentPosition)
+            }
         }
 
         viewModel.playlists.observe(viewLifecycleOwner) { playlists ->
@@ -298,21 +306,62 @@ class MediaFragment : Fragment(R.layout.fragment_media) {
         }
     }
 
+    private fun registerNetworkReceiver() {
+        if (networkChangeReceiver == null) {
+            networkChangeReceiver = NetworkChangeReceiver()
+
+            val filter = IntentFilter().apply {
+                addAction(NetworkChangeReceiver.CONNECTIVITY_ACTION)
+            }
+
+            requireContext().registerReceiver(networkChangeReceiver, filter)
+        }
+    }
+
+    private fun unregisterNetworkReceiver() {
+        networkChangeReceiver?.let {
+            requireContext().unregisterReceiver(it)
+            networkChangeReceiver = null
+        }
+    }
+
     override fun onPause() {
         super.onPause()
+        unregisterNetworkReceiver()
+
         if (isBottomSheetShowing) {
             hidePlaylistsBottomSheet()
         }
-        val currentState = viewModel.playerScreenState.value
-        if (currentState?.playerState == PlayerState.PLAYING) {
-            viewModel.playPause()
+
+        if (requireActivity().isChangingConfigurations.not()) {
+            val currentState = viewModel.playerScreenState.value
+            if (currentState?.playerState == PlayerState.PLAYING) {
+                viewModel.showNotification()
+            }
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        viewModel.hideNotification()
+        registerNetworkReceiver()
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
         viewModel.setBottomSheetOpen(false)
         _binding = null
+
+        if (isAdded && !requireActivity().isChangingConfigurations) {
+            unbindAudioService()
+        }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        if (isServiceBound) {
+            unbindAudioService()
+        }
     }
 
     companion object {
