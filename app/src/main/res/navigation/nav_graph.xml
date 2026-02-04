@@ -38,8 +38,7 @@
     <fragment
         android:id="@+id/settingsFragment"
         android:name="com.hfad.playlistmaker.settings.ui.SettingsFragment"
-        android:label="@string/button_settings"
-        tools:layout="@layout/fragment_settings" />
+        android:label="@string/button_settings" />
 
     <fragment
         android:id="@+id/mediaFragment"

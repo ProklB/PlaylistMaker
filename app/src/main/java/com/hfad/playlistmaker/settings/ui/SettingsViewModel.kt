@@ -1,5 +1,7 @@
 package com.hfad.playlistmaker.settings.ui
 
+import androidx.appcompat.app.AppCompatDelegate
+import androidx.core.graphics.drawable.DrawableCompat.applyTheme
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -24,5 +26,16 @@ class SettingsViewModel(
     fun onThemeSwitchChanged(isChecked: Boolean) {
         _themeSwitchState.value = isChecked
         settingsInteractor.updateThemeSetting(Settings(isChecked))
+        applyTheme(isChecked)
+    }
+
+    private fun applyTheme(isDarkTheme: Boolean) {
+        AppCompatDelegate.setDefaultNightMode(
+            if (isDarkTheme) {
+                AppCompatDelegate.MODE_NIGHT_YES
+            } else {
+                AppCompatDelegate.MODE_NIGHT_NO
+            }
+        )
     }
 }
