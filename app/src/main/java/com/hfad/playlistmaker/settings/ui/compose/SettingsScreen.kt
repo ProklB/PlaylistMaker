@@ -1,4 +1,4 @@
-package com.hfad.playlistmaker.settings.ui
+package com.hfad.playlistmaker.settings.ui.compose
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -33,6 +33,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.hfad.playlistmaker.R
+import com.hfad.playlistmaker.settings.ui.SettingsViewModel
 import com.hfad.playlistmaker.ui.theme.MaterialTextViewStyle
 import com.hfad.playlistmaker.ui.theme.MyTitleTextStyle
 

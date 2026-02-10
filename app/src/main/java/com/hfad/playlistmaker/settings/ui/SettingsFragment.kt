@@ -11,6 +11,7 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.fragment.app.Fragment
 import com.hfad.playlistmaker.R
 import com.hfad.playlistmaker.settings.domain.models.Settings
+import com.hfad.playlistmaker.settings.ui.compose.SettingsScreen
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class SettingsFragment : Fragment() {
