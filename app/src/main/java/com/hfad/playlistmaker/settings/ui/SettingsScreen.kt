@@ -1,6 +1,5 @@
 package com.hfad.playlistmaker.settings.ui
 
-
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -9,16 +8,16 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
@@ -26,7 +25,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -34,6 +33,8 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.hfad.playlistmaker.R
+import com.hfad.playlistmaker.ui.theme.MaterialTextViewStyle
+import com.hfad.playlistmaker.ui.theme.MyTitleTextStyle
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -43,30 +44,25 @@ fun SettingsScreen(
     onSupportClick: () -> Unit,
     onAgreementClick: () -> Unit
 ) {
-    val context = LocalContext.current
+
     val themeSwitchState by viewModel.themeSwitchState.observeAsState(false)
 
     Scaffold(
         topBar = {
-            CenterAlignedTopAppBar(
+            TopAppBar(
                 title = {
                     Text(
                         text = stringResource(id = R.string.button_settings),
-                        style = MaterialTheme.typography.headlineSmall
+                        style = MyTitleTextStyle()
                     )
                 },
-                navigationIcon = {
-                    IconButton(onClick = {
-                        (context as? androidx.fragment.app.FragmentActivity)?.supportFragmentManager?.popBackStack()
-                    }) {
-                        Icon(
-                            painter = painterResource(id = R.drawable.arrowback),
-                            contentDescription = "Назад"
-                        )
-                    }
-                }
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = colorResource(id = R.color.bg_secondary),
+                    titleContentColor = colorResource(id = R.color.text_textview)
+                )
             )
-        }
+        },
+        containerColor = colorResource(id = R.color.bg_secondary)
     ) { paddingValues ->
         Column(
             modifier = Modifier
@@ -85,8 +81,8 @@ fun SettingsScreen(
             ) {
                 Text(
                     text = stringResource(id = R.string.switch_themes),
-                    style = MaterialTheme.typography.bodyLarge,
-                    color = MaterialTheme.colorScheme.onSurface
+                    style = MaterialTextViewStyle(),
+                    color = colorResource(id = R.color.text_textview)
                 )
                 Switch(
                     checked = themeSwitchState,
@@ -143,13 +139,13 @@ fun SettingsItem(
         ) {
             Text(
                 text = text,
-                style = MaterialTheme.typography.bodyLarge,
-                color = MaterialTheme.colorScheme.onSurface
+                style = MaterialTextViewStyle(),
+                color = colorResource(id = R.color.text_textview)
             )
             Icon(
                 painter = painterResource(id = iconRes),
                 contentDescription = null,
-                tint = MaterialTheme.colorScheme.onSurfaceVariant
+                tint = Color.Unspecified
             )
         }
     }
@@ -192,15 +188,20 @@ fun PreviewSettingsScreenContent(
 ) {
     Scaffold(
         topBar = {
-            CenterAlignedTopAppBar(
+            TopAppBar(
                 title = {
                     Text(
-                        text = "Настройки", // Прямой текст для предпросмотра
-                        style = MaterialTheme.typography.headlineSmall
+                        text = "Настройки",
+                        style = MyTitleTextStyle()
                     )
-                }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = colorResource(id = R.color.bg_secondary),
+                    titleContentColor = colorResource(id = R.color.text_textview)
+                )
             )
-        }
+        },
+        containerColor = colorResource(id = R.color.bg_secondary)
     ) { paddingValues ->
         Column(
             modifier = Modifier
@@ -218,8 +219,8 @@ fun PreviewSettingsScreenContent(
             ) {
                 Text(
                     text = "Тёмная тема",
-                    style = MaterialTheme.typography.bodyLarge,
-                    color = MaterialTheme.colorScheme.onSurface
+                    style = MaterialTextViewStyle(),
+                    color = colorResource(id = R.color.text_textview)
                 )
                 Switch(
                     checked = themeSwitchState,
@@ -268,13 +269,13 @@ fun PreviewSettingsItem(
         ) {
             Text(
                 text = text,
-                style = MaterialTheme.typography.bodyLarge,
-                color = MaterialTheme.colorScheme.onSurface
+                style = MaterialTextViewStyle(),
+                color = colorResource(id = R.color.text_textview)
             )
             Icon(
                 painter = painterResource(id = iconRes),
                 contentDescription = null,
-                tint = MaterialTheme.colorScheme.onSurfaceVariant
+                tint = Color.Unspecified
             )
         }
     }

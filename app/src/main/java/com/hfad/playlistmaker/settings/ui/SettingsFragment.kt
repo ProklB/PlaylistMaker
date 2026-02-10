@@ -6,9 +6,11 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.compose.ui.platform.ComposeView
 import androidx.fragment.app.Fragment
 import com.hfad.playlistmaker.R
+import com.hfad.playlistmaker.settings.domain.models.Settings
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class SettingsFragment : Fragment() {
@@ -29,6 +31,20 @@ class SettingsFragment : Fragment() {
                     onAgreementClick = ::openUserAgreement
                 )
             }
+        }
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        observeViewModel()
+    }
+
+    private fun observeViewModel() {
+        viewModel.themeApplied.observe(viewLifecycleOwner) { settings ->
+            applyTheme(settings)
+        }
+        viewModel.themeSwitchState.observe(viewLifecycleOwner) { isDarkTheme ->
+            applyTheme(Settings(isDarkTheme))
         }
     }
 
@@ -55,6 +71,16 @@ class SettingsFragment : Fragment() {
         val agreementUri = Uri.parse(getString(R.string.agreement_link))
         val browserIntent = Intent(Intent.ACTION_VIEW, agreementUri)
         startActivity(browserIntent)
+    }
+
+    private fun applyTheme(settings: Settings) {
+        AppCompatDelegate.setDefaultNightMode(
+            if (settings.darkThemeEnabled) {
+                AppCompatDelegate.MODE_NIGHT_YES
+            } else {
+                AppCompatDelegate.MODE_NIGHT_NO
+            }
+        )
     }
 
     companion object {

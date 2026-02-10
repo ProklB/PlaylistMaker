@@ -1,51 +1,74 @@
 package com.hfad.playlistmaker.library.ui
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.View
+import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.platform.ViewCompositionStrategy
+import androidx.fragment.app.Fragment
+import com.hfad.playlistmaker.library.ui.compose.LibraryScreen
+import com.hfad.playlistmaker.library.ui.compose.FavoritesScreen
+import com.hfad.playlistmaker.library.ui.compose.PlaylistsScreen
+import com.hfad.playlistmaker.library.ui.viewmodel.FavoritesViewModel
+import com.hfad.playlistmaker.library.ui.viewmodel.PlaylistsViewModel
+import com.hfad.playlistmaker.search.domain.models.Track
+import com.hfad.playlistmaker.playlist.domain.models.Playlist
+import androidx.navigation.fragment.findNavController
 import com.hfad.playlistmaker.R
-import com.google.android.material.tabs.TabLayoutMediator
-import com.hfad.playlistmaker.databinding.FragmentLibraryBinding
-import com.hfad.playlistmaker.library.ui.adapter.LibraryPagerAdapter
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
-class LibraryFragment : Fragment(R.layout.fragment_library) {
+class LibraryFragment : Fragment() {
 
-    private var _binding: FragmentLibraryBinding? = null
-    private val binding get() = _binding!!
+    private val favoritesViewModel: FavoritesViewModel by viewModel()
+    private val playlistsViewModel: PlaylistsViewModel by viewModel()
 
-    private lateinit var tabMediator: TabLayoutMediator
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        _binding = FragmentLibraryBinding.bind(view)
-
-        setupToolbar()
-        setupViewPager()
-    }
-
-    private fun setupToolbar() {
-        binding.toolbar.setNavigationOnClickListener {
-            requireActivity().supportFragmentManager.popBackStack()
-        }
-    }
-
-    private fun setupViewPager() {
-        val adapter = LibraryPagerAdapter(requireActivity())
-        binding.viewPager.adapter = adapter
-
-        tabMediator = TabLayoutMediator(binding.tabLayout, binding.viewPager) { tab, position ->
-            tab.text = when (position) {
-                0 -> getString(R.string.favorites_tab)
-                else -> getString(R.string.playlists_tab)
+    override fun onCreateView(
+        inflater: android.view.LayoutInflater,
+        container: android.view.ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        return ComposeView(requireContext()).apply {
+            setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
+            setContent {
+                LibraryScreen(
+                    favoritesContent = {
+                        FavoritesScreen(
+                            favoritesState = favoritesViewModel.favoritesState,
+                            onTrackClick = { track -> onTrackClick(track) }
+                        )
+                    },
+                    playlistsContent = {
+                        PlaylistsScreen(
+                            playlistsState = playlistsViewModel.playlistsState,
+                            onCreatePlaylistClick = {
+                                findNavController().navigate(R.id.action_libraryFragment_to_createPlaylistFragment)
+                            },
+                            onPlaylistClick = { playlist -> onPlaylistClick(playlist) }
+                        )
+                    },
+                    showFavorites = true
+                )
             }
         }
-        tabMediator.attach()
     }
 
-    override fun onDestroyView() {
-        super.onDestroyView()
-        tabMediator.detach()
-        _binding = null
+    private fun onTrackClick(track: Track) {
+        val bundle = Bundle().apply {
+            putParcelable("track", track)
+        }
+        findNavController().navigate(R.id.action_libraryFragment_to_mediaFragment, bundle)
+    }
+
+    private fun onPlaylistClick(playlist: Playlist) {
+        val bundle = Bundle().apply {
+            putLong("playlist_id", playlist.id)
+        }
+        findNavController().navigate(R.id.action_libraryFragment_to_playlistDetailsFragment, bundle)
+    }
+
+    override fun onResume() {
+        super.onResume()
+        favoritesViewModel.loadFavoriteTracks()
+        playlistsViewModel.loadPlaylists()
     }
 
     companion object {

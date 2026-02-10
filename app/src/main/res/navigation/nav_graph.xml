@@ -8,8 +8,7 @@
     <fragment
         android:id="@+id/searchFragment"
         android:name="com.hfad.playlistmaker.search.ui.SearchFragment"
-        android:label="@string/button_search"
-        tools:layout="@layout/fragment_search">
+        android:label="@string/button_search">
 
         <action
             android:id="@+id/action_searchFragment_to_mediaFragment"
