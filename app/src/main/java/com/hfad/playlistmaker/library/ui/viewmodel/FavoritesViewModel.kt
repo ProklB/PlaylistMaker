@@ -34,6 +34,7 @@ class FavoritesViewModel(
 }
 
 sealed class FavoritesState {
+    object Loading : FavoritesState()
     object Empty : FavoritesState()
     data class Content(val tracks: List<Track>) : FavoritesState()
 }

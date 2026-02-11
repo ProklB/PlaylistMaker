@@ -34,9 +34,12 @@ fun FavoritesScreen(
     favoritesState: LiveData<FavoritesState>,
     onTrackClick: (Track) -> Unit
 ) {
-    val state by favoritesState.observeAsState()
+    val state by favoritesState.observeAsState(FavoritesState.Loading)
 
     when (state) {
+        is FavoritesState.Loading -> {
+            LoadingFavoritesState()
+        }
         is FavoritesState.Empty -> {
             EmptyFavoritesState()
         }
@@ -54,16 +57,18 @@ fun FavoritesScreen(
                 }
             }
         }
-        null -> {
-            Box(
-                modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center
-            ) {
-                CircularProgressIndicator(
-                    color = colorResource(id = R.color.progressBar)
-                )
-            }
-        }
+    }
+}
+
+@Composable
+fun LoadingFavoritesState() {
+    Box(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center
+    ) {
+        CircularProgressIndicator(
+            color = colorResource(id = R.color.progressBar)
+        )
     }
 }
 
