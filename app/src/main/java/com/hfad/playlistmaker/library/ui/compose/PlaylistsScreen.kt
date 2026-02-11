@@ -105,7 +105,7 @@ fun EmptyPlaylistsState(modifier: Modifier = Modifier) {
     Column(
         modifier = modifier
             .fillMaxSize()
-            .padding(16.dp),
+            .padding(top = 46.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
 
     ) {

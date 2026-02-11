@@ -434,13 +434,17 @@ fun TrackItem(
                         ),
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
-                        modifier = Modifier.weight(1f)
+                        modifier = Modifier.weight(1f, fill = false)
                     )
 
-                    Spacer(modifier = Modifier.width(4.dp))
+                    androidx.compose.foundation.Image(
+                        painter = painterResource(id = R.drawable.ic),
+                        contentDescription = null,
+                        modifier = Modifier.size(13.dp)
+                    )
 
                     Text(
-                        text = timeFormat.format(track.trackTimeMillis),
+                        text = " ${timeFormat.format(track.trackTimeMillis)}",
                         style = TextStyle(
                             fontSize = 11.sp,
                             color = colorResource(id = R.color.text_trackinfo),

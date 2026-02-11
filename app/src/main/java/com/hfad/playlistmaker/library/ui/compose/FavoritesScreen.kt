@@ -72,7 +72,7 @@ fun EmptyFavoritesState() {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(16.dp),
+            .padding(top = 106.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Image(
