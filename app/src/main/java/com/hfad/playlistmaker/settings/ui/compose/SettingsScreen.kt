@@ -25,7 +25,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -36,6 +35,7 @@ import com.hfad.playlistmaker.R
 import com.hfad.playlistmaker.settings.ui.SettingsViewModel
 import com.hfad.playlistmaker.ui.theme.MaterialTextViewStyle
 import com.hfad.playlistmaker.ui.theme.MyTitleTextStyle
+import com.hfad.playlistmaker.ui.theme.PlaylistMakerTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -45,77 +45,79 @@ fun SettingsScreen(
     onSupportClick: () -> Unit,
     onAgreementClick: () -> Unit
 ) {
-
     val themeSwitchState by viewModel.themeSwitchState.observeAsState(false)
 
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = {
-                    Text(
-                        text = stringResource(id = R.string.button_settings),
-                        style = MyTitleTextStyle()
-                    )
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = colorResource(id = R.color.bg_secondary),
-                    titleContentColor = colorResource(id = R.color.text_textview)
-                )
-            )
-        },
-        containerColor = colorResource(id = R.color.bg_secondary)
-    ) { paddingValues ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues)
-                .verticalScroll(rememberScrollState()),
-            horizontalAlignment = Alignment.Start
-        ) {
-
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 12.dp),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                Text(
-                    text = stringResource(id = R.string.switch_themes),
-                    style = MaterialTextViewStyle(),
-                    color = colorResource(id = R.color.text_textview)
-                )
-                Switch(
-                    checked = themeSwitchState,
-                    onCheckedChange = { isChecked ->
-                        viewModel.onThemeSwitchChanged(isChecked)
+    PlaylistMakerTheme(darkTheme = themeSwitchState) {
+        Scaffold(
+            topBar = {
+                TopAppBar(
+                    title = {
+                        Text(
+                            text = stringResource(id = R.string.button_settings),
+                            style = MyTitleTextStyle()
+                        )
                     },
-                    colors = SwitchDefaults.colors(
-                        checkedThumbColor = Color(0xFF6200EE),
-                        checkedTrackColor = Color(0xFF6200EE).copy(alpha = 0.5f),
-                        uncheckedThumbColor = Color(0xFFF5F5F5),
-                        uncheckedTrackColor = Color(0xFF9E9E9E),
+                    colors = TopAppBarDefaults.topAppBarColors(
+                        containerColor = MaterialTheme.colorScheme.surface,
+                        titleContentColor = MaterialTheme.colorScheme.onSurface
                     )
+                )
+            },
+            containerColor = MaterialTheme.colorScheme.background
+        ) { paddingValues ->
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(paddingValues)
+                    .verticalScroll(rememberScrollState()),
+                horizontalAlignment = Alignment.Start
+            ) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp, vertical = 12.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Text(
+                        text = stringResource(id = R.string.switch_themes),
+                        style = MaterialTextViewStyle(),
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
+                    Switch(
+                        checked = themeSwitchState,
+                        onCheckedChange = { isChecked ->
+                            viewModel.onThemeSwitchChanged(isChecked)
+                        },
+                        colors = SwitchDefaults.colors(
+                            uncheckedThumbColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                            uncheckedTrackColor = MaterialTheme.colorScheme.primaryContainer,
+                            uncheckedBorderColor = Color.Transparent,
+                            checkedThumbColor = MaterialTheme.colorScheme.inversePrimary,
+                            checkedTrackColor = MaterialTheme.colorScheme.inverseSurface,
+                            checkedBorderColor = Color.Transparent
+                        )
+                    )
+                }
+
+                SettingsItem(
+                    text = stringResource(id = R.string.textview_share),
+                    iconRes = R.drawable.share,
+                    onClick = onShareClick
+                )
+
+                SettingsItem(
+                    text = stringResource(id = R.string.textview_support),
+                    iconRes = R.drawable.support,
+                    onClick = onSupportClick
+                )
+
+                SettingsItem(
+                    text = stringResource(id = R.string.textview_arrowForward),
+                    iconRes = R.drawable.arrowforward,
+                    onClick = onAgreementClick
                 )
             }
-
-            SettingsItem(
-                text = stringResource(id = R.string.textview_share),
-                iconRes = R.drawable.share,
-                onClick = onShareClick
-            )
-
-            SettingsItem(
-                text = stringResource(id = R.string.textview_support),
-                iconRes = R.drawable.support,
-                onClick = onSupportClick
-            )
-
-            SettingsItem(
-                text = stringResource(id = R.string.textview_arrowForward),
-                iconRes = R.drawable.arrowforward,
-                onClick = onAgreementClick
-            )
         }
     }
 }
@@ -141,12 +143,12 @@ fun SettingsItem(
             Text(
                 text = text,
                 style = MaterialTextViewStyle(),
-                color = colorResource(id = R.color.text_textview)
+                color = MaterialTheme.colorScheme.onSurface
             )
             Icon(
                 painter = painterResource(id = iconRes),
                 contentDescription = null,
-                tint = Color.Unspecified
+                tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
             )
         }
     }
@@ -164,10 +166,10 @@ class PreviewSettingsViewModel {
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
 fun SettingsScreenPreview() {
-    MaterialTheme {
-        val previewViewModel = remember { PreviewSettingsViewModel() }
-        val themeSwitchState by previewViewModel.themeSwitchState.observeAsState(false)
+    val previewViewModel = remember { PreviewSettingsViewModel() }
+    val themeSwitchState by previewViewModel.themeSwitchState.observeAsState(false)
 
+    PlaylistMakerTheme(darkTheme = themeSwitchState) {
         PreviewSettingsScreenContent(
             themeSwitchState = themeSwitchState,
             onThemeSwitchChanged = { previewViewModel.onThemeSwitchChanged(it) },
@@ -192,17 +194,17 @@ fun PreviewSettingsScreenContent(
             TopAppBar(
                 title = {
                     Text(
-                        text = "Настройки",
+                        text = stringResource(id = R.string.button_settings),
                         style = MyTitleTextStyle()
                     )
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = colorResource(id = R.color.bg_secondary),
-                    titleContentColor = colorResource(id = R.color.text_textview)
+                    containerColor = MaterialTheme.colorScheme.surface,
+                    titleContentColor = MaterialTheme.colorScheme.onSurface
                 )
             )
         },
-        containerColor = colorResource(id = R.color.bg_secondary)
+        containerColor = MaterialTheme.colorScheme.background
     ) { paddingValues ->
         Column(
             modifier = Modifier
@@ -219,30 +221,40 @@ fun PreviewSettingsScreenContent(
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Text(
-                    text = "Тёмная тема",
+                    text = stringResource(id = R.string.switch_themes),
                     style = MaterialTextViewStyle(),
-                    color = colorResource(id = R.color.text_textview)
+                    color = MaterialTheme.colorScheme.onSurface
                 )
                 Switch(
                     checked = themeSwitchState,
-                    onCheckedChange = onThemeSwitchChanged
+                    onCheckedChange = { isChecked ->
+                        onThemeSwitchChanged(isChecked)
+                    },
+                    colors = SwitchDefaults.colors(
+                        uncheckedThumbColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                        uncheckedTrackColor = MaterialTheme.colorScheme.primaryContainer,
+                        uncheckedBorderColor = Color.Transparent,
+                        checkedThumbColor = MaterialTheme.colorScheme.inversePrimary,
+                        checkedTrackColor = MaterialTheme.colorScheme.inverseSurface,
+                        checkedBorderColor = Color.Transparent
+                    )
                 )
             }
 
             PreviewSettingsItem(
-                text = "Поделиться приложением",
+                text = stringResource(id = R.string.textview_share),
                 iconRes = R.drawable.share,
                 onClick = onShareClick
             )
 
             PreviewSettingsItem(
-                text = "Написать в поддержку",
+                text = stringResource(id = R.string.textview_support),
                 iconRes = R.drawable.support,
                 onClick = onSupportClick
             )
 
             PreviewSettingsItem(
-                text = "Пользовательское соглашение",
+                text = stringResource(id = R.string.textview_arrowForward),
                 iconRes = R.drawable.arrowforward,
                 onClick = onAgreementClick
             )
@@ -271,12 +283,12 @@ fun PreviewSettingsItem(
             Text(
                 text = text,
                 style = MaterialTextViewStyle(),
-                color = colorResource(id = R.color.text_textview)
+                color = MaterialTheme.colorScheme.onSurface
             )
             Icon(
                 painter = painterResource(id = iconRes),
                 contentDescription = null,
-                tint = Color.Unspecified
+                tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
             )
         }
     }
