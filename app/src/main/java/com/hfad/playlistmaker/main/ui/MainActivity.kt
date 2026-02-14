@@ -32,6 +32,7 @@ class MainActivity : AppCompatActivity() {
 
         setupNavigation()
         setupEdgeToEdge()
+        setupWindowInsets()
 
         checkAndRequestNotificationPermission()
     }
@@ -46,21 +47,55 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setupEdgeToEdge() {
-        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { view, insets ->
-            val statusBar = insets.getInsets(WindowInsetsCompat.Type.statusBars())
+        ViewCompat.setOnApplyWindowInsetsListener(binding.bottomNavigation) { view, insets ->
             val navigationBar = insets.getInsets(WindowInsetsCompat.Type.navigationBars())
-
-            view.updatePadding(
-                top = statusBar.top,
-                bottom = navigationBar.bottom
-            )
-
-            binding.bottomNavigation.updatePadding(
-                bottom = navigationBar.bottom
-            )
-
+            view.updatePadding(bottom = navigationBar.bottom)
             insets
         }
+    }
+
+    private fun setupWindowInsets() {
+        val navHostFragment = supportFragmentManager
+            .findFragmentById(R.id.nav_host_fragment) as NavHostFragment
+        val navController = navHostFragment.navController
+
+        navController.addOnDestinationChangedListener { _, destination, _ ->
+            when (destination.id) {
+                R.id.createPlaylistFragment,
+                R.id.playlistDetailsFragment,
+                R.id.editPlaylistFragment,
+                R.id.mediaFragment -> {
+                    applyInsetsToRoot(true)
+                }
+                R.id.searchFragment,
+                R.id.libraryFragment,
+                R.id.settingsFragment -> {
+                    applyInsetsToRoot(false)
+                }
+                else -> {
+                    applyInsetsToRoot(false)
+                }
+            }
+        }
+    }
+
+    private fun applyInsetsToRoot(apply: Boolean) {
+        if (apply) {
+            ViewCompat.setOnApplyWindowInsetsListener(binding.root) { view, insets ->
+                val statusBar = insets.getInsets(WindowInsetsCompat.Type.statusBars())
+                val navigationBar = insets.getInsets(WindowInsetsCompat.Type.navigationBars())
+
+                view.updatePadding(
+                    top = statusBar.top,
+                    bottom = navigationBar.bottom
+                )
+                insets
+            }
+        } else {
+            ViewCompat.setOnApplyWindowInsetsListener(binding.root, null)
+            binding.root.updatePadding(top = 0, bottom = 0)
+        }
+        ViewCompat.requestApplyInsets(binding.root)
     }
 
     private fun setupNavigation() {

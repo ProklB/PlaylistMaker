@@ -13,6 +13,9 @@ class SettingsViewModel(
     private val _themeSwitchState = MutableLiveData<Boolean>()
     val themeSwitchState: LiveData<Boolean> = _themeSwitchState
 
+    private val _themeApplied = MutableLiveData<Settings>()
+    val themeApplied: LiveData<Settings> = _themeApplied
+
     init {
         loadSettings()
     }
@@ -22,7 +25,9 @@ class SettingsViewModel(
     }
 
     fun onThemeSwitchChanged(isChecked: Boolean) {
+        val newSettings = Settings(isChecked)
         _themeSwitchState.value = isChecked
-        settingsInteractor.updateThemeSetting(Settings(isChecked))
+        settingsInteractor.updateThemeSetting(newSettings)
+        _themeApplied.value = newSettings
     }
 }

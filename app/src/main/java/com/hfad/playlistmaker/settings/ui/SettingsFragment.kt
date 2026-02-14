@@ -1,56 +1,50 @@
 package com.hfad.playlistmaker.settings.ui
 
-import android.os.Bundle
-import androidx.fragment.app.Fragment
-import android.view.View
-import com.hfad.playlistmaker.R
 import android.content.Intent
 import android.net.Uri
+import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatDelegate
-import com.hfad.playlistmaker.databinding.FragmentSettingsBinding
+import androidx.compose.ui.platform.ComposeView
+import androidx.fragment.app.Fragment
+import com.hfad.playlistmaker.R
 import com.hfad.playlistmaker.settings.domain.models.Settings
+import com.hfad.playlistmaker.settings.ui.compose.SettingsScreen
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
-class SettingsFragment : Fragment(R.layout.fragment_settings) {
+class SettingsFragment : Fragment() {
 
     private val viewModel: SettingsViewModel by viewModel()
 
-    private var _binding: FragmentSettingsBinding? = null
-    private val binding get() = _binding!!
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        return ComposeView(requireContext()).apply {
+            setContent {
+                SettingsScreen(
+                    viewModel = viewModel,
+                    onShareClick = ::shareApp,
+                    onSupportClick = ::contactSupport,
+                    onAgreementClick = ::openUserAgreement
+                )
+            }
+        }
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        _binding = FragmentSettingsBinding.bind(view)
-
-        setupViews()
         observeViewModel()
     }
 
-    private fun setupViews() {
-        binding.title.setNavigationOnClickListener {
-            requireActivity().supportFragmentManager.popBackStack()
-        }
-
-        binding.themeSwitcher.setOnCheckedChangeListener { _, isChecked ->
-            viewModel.onThemeSwitchChanged(isChecked)
-        }
-
-        binding.settingsShare.setOnClickListener {
-            shareApp()
-        }
-
-        binding.settingsSupport.setOnClickListener {
-            contactSupport()
-        }
-
-        binding.settingsAgreement.setOnClickListener {
-            openUserAgreement()
-        }
-    }
-
     private fun observeViewModel() {
+        viewModel.themeApplied.observe(viewLifecycleOwner) { settings ->
+            applyTheme(settings)
+        }
         viewModel.themeSwitchState.observe(viewLifecycleOwner) { isDarkTheme ->
-            binding.themeSwitcher.isChecked = isDarkTheme
             applyTheme(Settings(isDarkTheme))
         }
     }
@@ -88,11 +82,6 @@ class SettingsFragment : Fragment(R.layout.fragment_settings) {
                 AppCompatDelegate.MODE_NIGHT_NO
             }
         )
-    }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
     }
 
     companion object {
